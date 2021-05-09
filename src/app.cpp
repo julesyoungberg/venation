@@ -1,34 +1,25 @@
-#include <cstdlib>
-#include <GLFW/glfw3.h>
+#include <GLUT/glut.h>
 
-void display(GLFWwindow* window) {
-    glfwMakeContextCurrent(window);
+// main animation loop
+void display() {
     glClearColor(0.0, 1.0, 1.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glfwSwapBuffers(window);
+    glutSwapBuffers();
 }
 
 int main(int argc, char** argv) {
-    // initialize glfw
-    if (!glfwInit()) {
-        return EXIT_FAILURE;
-    }
+    // initialize GLUT
+    glutInit(&argc, argv);
 
     // create window
-    glfwSwapInterval(1);
-    GLFWwindow* window = glfwCreateWindow(512, 512, argv[0], nullptr, nullptr);
-    if (!window) {
-        glfwTerminate();
-        return EXIT_FAILURE;
-    }
-
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(512, 512);
+    glutCreateWindow(argv[0]);
+    
     // animate
-    glfwSetWindowRefreshCallback(window, display);
-    while (!glfwWindowShouldClose(window)) {
-        glfwWaitEvents();
-    }
+    glutDisplayFunc(display);
+    glutMainLoop();
 
-    glfwTerminate();
-    return EXIT_SUCCESS;
+    return 0;
 }
 
