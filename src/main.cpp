@@ -1,15 +1,17 @@
 #include <GLUT/glut.h>
 
-// main animation loop
+#include "scene.hpp"
+
+Scene* scene;
+
 void display() {
-    glClearColor(0.0, 1.0, 1.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glutSwapBuffers();
+    scene->display();
 }
 
 int main(int argc, char** argv) {
-    // initialize GLUT
+    // initialize app
     glutInit(&argc, argv);
+    auto scene = Scene();
 
     // create window
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
