@@ -3,16 +3,20 @@ cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 project(branching_growth LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_MODULE_PATH /)
 
 # dependencies
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
+find_package(GLEW REQUIRED)
+# find_package(PkgConfig REQUIRED)
+# pkg_search_module(GLFW REQUIRED glfw3)
+find_package(glfw3 REQUIRED)
 
 # application
-add_executable(app src/main.cpp src/scene.cpp src/scene.hpp)
+add_executable(app src/main.cpp src/app.cpp src/app.hpp src/shader.cpp src/shader.hpp)
 
-target_include_directories(app PUBLIC ${GLUT_INCLUDE_DIR} 
-    ${OPENGL_INCLUDE_DIR})
+target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
+    ${OPENGL_INCLUDE_DIR} ./lib)
 
-target_link_libraries(app ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(app GLEW::GLEW OpenGL::GL ${GLFW_LIBRARIES})
 
