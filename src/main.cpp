@@ -13,14 +13,10 @@ void display(GLFWwindow* window) {
 
 int main(int argc, char** argv) {
     // initialize app
-    // glutInit(&argc, argv);
     if (!glfwInit()) { return EXIT_FAILURE; }
     glfwSwapInterval(1);
 
     // create window
-    // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    // glutInitWindowSize(512, 512);
-    // glutCreateWindow(argv[0]);
     GLFWwindow* window = glfwCreateWindow(512, 512, argv[0], nullptr, nullptr);
     if (!window) {
         glfwTerminate();
@@ -30,8 +26,6 @@ int main(int argc, char** argv) {
     app.setup();
     
     // animate
-    // glutDisplayFunc(display);
-    // glutMainLoop();
     glfwSetWindowRefreshCallback(window, display);
     while (!glfwWindowShouldClose(window)) {
         glfwWaitEvents();
