@@ -2,7 +2,6 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/random.hpp>
-#include <boost/iterator/zip_iterator.hpp>
 
 #include "./app.hpp"
 
@@ -11,34 +10,18 @@ double rnd() {
 }
 
 void App::generate_attractors() {
-    constexpr int num_attractors = 1000;
+    constexpr int num_attractors = 500;
     double x;
     double y;
     attractors_ = std::vector<Point_2>(num_attractors);
-    std::vector<int> attractors_indices(num_attractors);
 
     for (int i = 0; i < num_attractors; ++i) {
         x = rnd() * 2.0 - 1.0;
         y = rnd() * 2.0 - 1.0;
         attractors_[i] = Point_2(x, y);
-        attractors_indices[i] = i;
     }
 
-    attractors_tree_.insert(
-        boost::make_zip_iterator(
-            boost::make_tuple(
-                attractors_.begin(),
-                attractors_indices.begin()
-            )
-        ),
-        boost::make_zip_iterator(
-            boost::make_tuple(
-                attractors_.end(),
-                attractors_indices.end()
-            )
-        )
-    );
-    attractors_tree_.build();
+    dt2.insert(attractors_.begin(), attractors_.end());
 }
 
 void App::setup() {
@@ -47,26 +30,12 @@ void App::setup() {
 
 void App::draw_attractors() {
     Point_2 query(0.0, 0.0);
-    K_neighbor_search search(attractors_tree_, query, 1);
-
-    Distance tr_dist;
-    // loop K through closest points
-    for (K_neighbor_search::iterator it = search.begin(); it != search.end(); it++) {
-        // it->first is the point, in this case tuple (point, index)
-        Point_2 p = boost::get<0>(it->first);
-        int index = boost::get<1>(it->first);
-
-        // it->second the transformed distance
-        double dist = tr_dist.inverse_of_transformed_distance(it->second);
-
-        std::cout << " d(q, nearest neighbor)=  " << dist << " "
-            << p << " " << index << std::endl;
-
-        // delete the point
-        attractors_.erase(std::remove(attractors_.begin(), attractors_.end(), p),
+    DT2::Vertex_handle nearest_v = dt2.nearest_vertex(query);
+    Point_2 nearest_p = nearest_v->point();
+    std::cout << "neareset: " << nearest_p << std::endl;
+    attractors_.erase(std::remove(attractors_.begin(), attractors_.end(), nearest_p),
             attractors_.end());
-        attractors_tree_.remove(it->first);
-    }
+    dt2.remove(nearest_v);
 
     glPointSize(10.0f);
     glBegin(GL_POINTS); 
