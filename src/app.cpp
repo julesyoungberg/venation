@@ -2,10 +2,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/random.hpp>
 
-#ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#endif
-
 #include "./app.hpp"
 
 float rnd() {
@@ -15,14 +11,15 @@ float rnd() {
 void App::setup() {
     // generate attractors
     constexpr int num_attractors = 1000;
+    std::vector<SDG2::Site_2> sites;
     for (int i = 0; i < num_attractors; ++i) {
-        attractors_.push_back(
-            glm::vec2(
-                rnd() * 2.0f - 1.0f,
-                rnd() * 2.0f - 1.0f
-            )
-        );
+        float x = rnd() * 2.0f - 1.0f;
+        float y = rnd() * 2.0f - 1.0f;
+        attractors_.push_back(glm::vec2(x, y));
+        sites.push_back(SDG2::Site_2::construct_site_2(Gt::Point_2(x, y)));
     }
+
+    sdg_.insert(sites.begin(), sites.end(), CGAL::Tag_true());
 }
 
 void App::draw_attractors() {
