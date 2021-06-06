@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
     app.setup();
     
     // animate
-    glfwSetWindowRefreshCallback(window, display);
     while (!glfwWindowShouldClose(window)) {
+        display(window);
         glfwWaitEvents();
     }
 

@@ -1,21 +1,25 @@
 #pragma once
 
 #include <vector>
-
-// choose the kernel
-#include <CGAL/Simple_cartesian.h>
-
-typedef CGAL::Simple_cartesian<double> K;
-
-// typedefs for the traits and the algorithm
-#include <CGAL/Segment_Delaunay_graph_hierarchy_2.h>
-#include <CGAL/Segment_Delaunay_graph_filtered_traits_2.h>
-
-typedef CGAL::Segment_Delaunay_graph_filtered_traits_2<K> Gt;
-
-typedef CGAL::Segment_Delaunay_graph_hierarchy_2<Gt> SDG2;
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Search_traits_2.h>
+#include <CGAL/Search_traits_adapter.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/Orthogonal_k_neighbor_search.h>
+#include <CGAL/property_map.h>
 
 #include "glm/glm.hpp"
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+typedef Kernel::Point_2                                     Point_2;
+typedef boost::tuple<Point_2, int>                          Point_and_int;
+typedef CGAL::Search_traits_2<Kernel>                       Traits_base;
+typedef CGAL::Search_traits_adapter<Point_and_int,
+  CGAL::Nth_of_tuple_property_map<0, Point_and_int>,
+  Traits_base>                                              Traits;
+typedef CGAL::Orthogonal_k_neighbor_search<Traits>          K_neighbor_search;
+typedef K_neighbor_search::Tree                             Tree;
+typedef K_neighbor_search::Distance                         Distance;
 
 class App {
     public:
@@ -29,8 +33,8 @@ class App {
         void generate_attractors();
         void draw_attractors();
 
-        std::vector<Gt::Point_2> attractors_;
-        SDG2 attractors_sdg_;
-
+        std::vector<Point_2> attractors_;
+        std::vector<int> attractors_indices_;
+        Tree attractors_tree_;
 };
 
