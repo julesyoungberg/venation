@@ -26,10 +26,11 @@ class App {
         void draw();
 
     private:
+        void generate_attractors();
         void draw_attractors();
 
-        std::vector<glm::vec2> attractors_;
-        SDG2 sdg_;
+        std::vector<Gt::Point_2> attractors_;
+        SDG2 attractors_sdg_;
 
 };
 
