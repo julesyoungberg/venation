@@ -1,9 +1,14 @@
 #include <algorithm>
 #include <iostream>
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <GLFW/glfw3.h>
 #include <glm/gtc/random.hpp>
 
-#include "./app.hpp"
+#include "app.hpp"
 
 double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
@@ -13,15 +18,22 @@ void App::generate_attractors() {
     constexpr int num_attractors = 500;
     double x;
     double y;
-    attractors_ = std::vector<Point_2>(num_attractors);
+    attractors_ = std::vector<point2>(num_attractors);
 
     for (int i = 0; i < num_attractors; ++i) {
         x = rnd() * 2.0 - 1.0;
         y = rnd() * 2.0 - 1.0;
-        attractors_[i] = Point_2(x, y);
+        attractors_[i] = point2(x, y);
     }
 
-    dt2.insert(attractors_.begin(), attractors_.end());
+    attractors_graph_.insert(attractors_.begin(), attractors_.end());
+}
+
+void App::create_seed() {
+    point2 seed_point(0.0, 0.0);
+    node_ref seed_node = node::create(seed_point);
+    nodes_.push_back(seed_node);
+    nodes_graph_.insert(seed_point);
 }
 
 void App::setup() {
@@ -29,13 +41,13 @@ void App::setup() {
 }
 
 void App::draw_attractors() {
-    Point_2 query(0.0, 0.0);
-    DT2::Vertex_handle nearest_v = dt2.nearest_vertex(query);
-    Point_2 nearest_p = nearest_v->point();
+    point2 query(0.0, 0.0);
+    auto nearest_v = attractors_graph_.nearest_vertex(query);
+    auto nearest_p = nearest_v->point();
     std::cout << "neareset: " << nearest_p << std::endl;
     attractors_.erase(std::remove(attractors_.begin(), attractors_.end(), nearest_p),
             attractors_.end());
-    dt2.remove(nearest_v);
+    attractors_graph_.remove(nearest_v);
 
     glPointSize(10.0f);
     glBegin(GL_POINTS); 
