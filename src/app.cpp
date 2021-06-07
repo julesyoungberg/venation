@@ -15,8 +15,11 @@ double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 }
 
+/**
+ * Generates an initial set of attractors
+ */
 void App::generate_attractors() {
-    constexpr int num_attractors = 500;
+    constexpr int num_attractors = 5000;
     double x;
     double y;
     std::vector<point2> attractors(num_attractors);
@@ -32,8 +35,11 @@ void App::generate_attractors() {
     attractors_graph_.insert(attractors.begin(), attractors.end());
 }
 
+/*
+ * Seed the growth.
+ */
 void App::create_seed() {
-    point2 seed_point(0.0, -1.0);
+    point2 seed_point(0.0, 0.0);
 
     // vertex with info needs to be inserted to the graph via vector
     std::vector<std::pair<point2, unsigned int>> seeds;
@@ -67,7 +73,7 @@ void App::update() {
         auto nearest_i = nearest_v->info();
         auto dst = std::sqrt(CGAL::squared_distance(query, nearest_p));
 
-        if (dst < 0.5) {
+        if (dst < 0.1) {
             influencing_attractors.push_back(query);
             // 2. sum the difference vectors for each node
             vector2 d = normalize(query - nearest_p);
@@ -87,7 +93,7 @@ void App::update() {
     
         // 4. add new node
         auto& parent = nodes_[i.first];
-        vector2 step = i.second * 0.005;
+        vector2 step = i.second * 0.002;
         point2 child_pos = point2(
             parent->position.x() + step.x(),
             parent->position.y() + step.y()
@@ -106,7 +112,7 @@ void App::update() {
         auto nearest_p = nearest_v->point();
         auto dst = std::sqrt(CGAL::squared_distance(a, nearest_p));
         
-        if (dst < 0.01) {
+        if (dst < 0.001) {
             attractors_graph_.remove(attractors_graph_.nearest_vertex(a));
         }
     }
