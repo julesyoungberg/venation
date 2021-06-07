@@ -11,6 +11,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel kernel;
 typedef CGAL::Triangulation_vertex_base_with_info_2<unsigned int, kernel> vertex_index;
 typedef CGAL::Triangulation_data_structure_2<vertex_index> vertex_index_data_structure;
 typedef kernel::Point_2 point2;
+typedef kernel::Vector_2 vector2;
 typedef CGAL::Delaunay_triangulation_2<kernel>  delaunay;
 typedef CGAL::Delaunay_triangulation_2<kernel, vertex_index_data_structure> delaunay_indexed;
 
@@ -20,14 +21,15 @@ class App {
         ~App() = default;
 
         void setup();
+        void update();
         void draw();
 
     private:
         void generate_attractors();
         void create_seed();
         void draw_attractors();
+        void draw_nodes();
 
-        std::vector<point2> attractors_;
         delaunay attractors_graph_;
         
         std::vector<node_ref> nodes_;

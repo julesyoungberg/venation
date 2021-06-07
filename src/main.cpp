@@ -32,8 +32,9 @@ int main(int argc, char** argv) {
     
     // animate
     while (!glfwWindowShouldClose(window)) {
+        app.update();
         display(window);
-        glfwWaitEvents();
+        glfwPollEvents();
     }
 
     glfwTerminate();
