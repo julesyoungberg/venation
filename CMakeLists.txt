@@ -8,15 +8,21 @@ set(CMAKE_BUILD_TYPE "Release")
 
 # dependencies
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(cgal REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(PkgConfig REQUIRED)
+# find_package(glfw3 REQUIRED)
+pkg_search_module(GLFW REQUIRED glfw3)
+find_package(CGAL REQUIRED)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
+	add_compile_options("-frounding-math")
+endif()
 
 # application
-add_executable(app src/main.cpp src/app.hpp src/app.cpp src/shader.hpp src/shader.cpp
-    src/node.hpp src/node.cpp)
+add_executable(app src/main.cpp src/app.hpp src/app.cpp src/node.hpp src/node.cpp)
 
 target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ./lib)
 
-target_link_libraries(app OpenGL::GL ${GLFW_LIBRARIES} CGAL::CGAL)
+target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL)
 
