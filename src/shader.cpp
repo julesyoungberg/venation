@@ -2,10 +2,6 @@
 #include <iostream>
 #include <fstream>
 
-#ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#endif
-
 #include "shader.hpp"
 
 /**
@@ -50,6 +46,8 @@ unsigned int shader::compile_string(const char** src, GLenum type) {
         std::cout << "ERROR: could not compile shader.\n" << log << std::endl;
         std::exit(1);
     }
+
+    return shader;
 }
 
 /**
@@ -63,7 +61,7 @@ unsigned int shader::compile_file(const std::string filename, GLenum type) {
     std::cout << "shader: " << shader_path << "\n";
     const std::string source = read(shader_path);
     const char* src = source.c_str();
-    shader::compile_string(&src, type);
+    return shader::compile_string(&src, type);
 }
 
 /**
@@ -86,4 +84,6 @@ unsigned int shader::create_program(unsigned int vert, unsigned int frag) {
         std::cout << "ERROR: could not link shader program." << log << std::endl;
         std::exit(1);
     }
+
+    return program;
 }

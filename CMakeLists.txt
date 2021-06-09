@@ -8,7 +8,6 @@ set(CMAKE_BUILD_TYPE "Release")
 
 # dependencies
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(cgal REQUIRED)
 
@@ -19,5 +18,5 @@ add_executable(app src/main.cpp src/app.hpp src/app.cpp src/shader.hpp src/shade
 target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ./lib)
 
-target_link_libraries(app GLEW::GLEW OpenGL::GL ${GLFW_LIBRARIES} CGAL::CGAL)
+target_link_libraries(app OpenGL::GL ${GLFW_LIBRARIES} CGAL::CGAL)
 
