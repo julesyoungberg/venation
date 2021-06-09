@@ -9,10 +9,14 @@ set(CMAKE_BUILD_TYPE "Release")
 # dependencies
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(PkgConfig REQUIRED)
-# find_package(glfw3 REQUIRED)
-pkg_search_module(GLFW REQUIRED glfw3)
 find_package(CGAL REQUIRED)
+
+if (APPLE)
+    find_package(glfw3 REQUIRED)
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GLFW REQUIRED glfw3)
+endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
 	add_compile_options("-frounding-math")
