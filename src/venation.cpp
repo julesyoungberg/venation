@@ -51,7 +51,7 @@ void venation::create_seed() {
     nodes_.push_back(seed_node);
 }
 
-vector2 normalize(vector2 p) {
+venation::vector2 normalize(venation::vector2 p) {
     return p / std::sqrt(p.squared_length());
 }
 
@@ -81,7 +81,7 @@ void venation::update() {
         }
     }
 
-    std::vector<std::pair<point2, unsigned int>> new_points;
+    std::vector<std::pair<venation::point2, unsigned int>> new_points;
     for (auto& i : influences) {
         // 3. normalize each vector sum
         i.second = normalize(i.second);

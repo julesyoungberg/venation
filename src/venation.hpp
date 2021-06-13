@@ -37,6 +37,8 @@ class venation {
         void generate_attractors();
         void create_seed();
         void update();
+        void draw_attractors();
+        void draw_nodes();
 
     private:
         type mode_;
