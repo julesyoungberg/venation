@@ -23,7 +23,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
 endif()
 
 # application
-add_executable(app src/main.cpp src/app.hpp src/app.cpp src/node.hpp src/node.cpp)
+add_executable(app src/main.cpp src/app.hpp src/app.cpp src/node.hpp 
+    src/node.cpp src/venation.hpp src/venation.cpp)
 
 target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ./lib)
