@@ -274,6 +274,8 @@ void venation::update() {
     } else if (mode_ == venation::type::closed) {
         closed_step();
     }
+
+    nodes_[0]->update_width();
 }
 
 void venation::draw_attractors() {
@@ -301,6 +303,7 @@ void venation::draw_nodes() {
 
         for (auto child : node->children) {
             to_visit.push_back(child);
+            glLineWidth(child->width * 3.0);
             glBegin(GL_LINES);
                 glVertex2d(node->position.x(), node->position.y());
                 glVertex2d(child->position.x(), child->position.y());

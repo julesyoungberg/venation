@@ -10,8 +10,11 @@ struct node {
     typedef CGAL::Exact_predicates_inexact_constructions_kernel kernel;
     typedef kernel::Point_2 point2;
 
-    node(const point2& p): position(p) {}
+    node(const point2& p, double base_width = 0.1)
+        : position(p), base_width(base_width), width(base_width) {}
     ~node() = default;
+
+    double update_width();
 
     static node_ref create(const point2& p) {
         return std::make_shared<node>(p);
@@ -19,5 +22,7 @@ struct node {
 
     std::vector<node_ref> children;
     point2 position;
+    double width;
+    double base_width;
 };
 
