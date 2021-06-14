@@ -100,7 +100,7 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
  */
 bool venation::has_consumed(unsigned int node_id, const venation::point2& s) {
     node_ref node = nodes_[node_id];
-    double kill_dist = 0.001;
+    double kill_dist = 0.0005;
 
     // check if the node is within kill distance
     if (distance(node->position, s) < kill_dist) {
@@ -205,6 +205,10 @@ void venation::closed_step() {
             // (u in V) ||v - s|| < max{||u - s||, ||v - u||}
             for (const auto& u_handle : adjacent) {
                 auto u = u_handle->point();
+                if (u == v) {
+                    continue;
+                }
+
                 auto u_s = distance(u, s);
                 auto v_u = distance(v, u);
                 

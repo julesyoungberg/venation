@@ -32,7 +32,7 @@ class venation {
 
         enum type { open, closed };
 
-        venation(type mode = type::open): mode_(mode) {}
+        venation(type mode = type::closed): mode_(mode) {}
         ~venation() = default;
 
         delaunay& get_attractors() { return attractors_graph_; }
