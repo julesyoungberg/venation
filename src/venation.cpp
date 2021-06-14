@@ -123,28 +123,26 @@ bool venation::has_consumed(unsigned int node_id, const venation::point2& s) {
 void venation::open_step() {
     // find the closest node to each attractor.
     std::map<unsigned int, vector2> influences;
-    std::vector<
-        std::pair<venation::attractor_handle, unsigned int>
-    > influence_pairs;
+    std::vector<venation::attractor_handle> influencing_attractors;
 
     for (auto it = attractors_graph_.finite_vertices_begin();
             it != attractors_graph_.finite_vertices_end(); ++it) {
         // 1. associate every attractor with a growth node
-        auto query = it->point();
-        auto nearest_v = nodes_graph_.nearest_vertex(query);
-        auto nearest_p = nearest_v->point();
-        auto nearest_i = nearest_v->info();
-        auto dist = distance(query, nearest_p);
+        auto attractor = it->point();
+        auto vertex = nodes_graph_.nearest_vertex(attractor);
+        auto point = vertex->point();
+        auto index = vertex->info();
+        auto dist = distance(attractor, point);
 
         if (dist > 0.0 && dist < 0.1) {
-            influence_pairs.push_back(std::make_pair(it, nearest_i));
+            influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
-            vector2 d = normalize(query - nearest_p);
-            auto l = influences.find(nearest_i);
+            vector2 d = normalize(attractor - point);
+            auto l = influences.find(index);
             if (l == influences.end()) {
-                influences[nearest_i] = d;
+                influences[index] = d;
             } else {
-                influences[nearest_i] = l->second + d;
+                influences[index] = l->second + d;
             }
         }
     }
@@ -153,10 +151,12 @@ void venation::open_step() {
     grow(influences);
 
     // 5. remove attractors that have been consumed
-    for (const auto& pair : influence_pairs) {
-        auto p = pair.first->point();
-        if (has_consumed(pair.second, p)) {
-            attractors_graph_.remove(pair.first);
+    for (const auto& a : influencing_attractors) {
+        auto vertex = nodes_graph_.nearest_vertex(a->point());
+        auto dst = distance(a->point(), vertex->point());
+
+        if (dst < 0.001) {
+            attractors_graph_.remove(a);
         }
     }
 }
