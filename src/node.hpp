@@ -4,12 +4,12 @@
 #include <vector>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel kernel;
-typedef kernel::Point_2 point2;
-
 typedef std::shared_ptr<struct node> node_ref;
 
 struct node {
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel kernel;
+    typedef kernel::Point_2 point2;
+
     node(const point2& p): position(p) {}
     ~node() = default;
 

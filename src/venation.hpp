@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include <vector>
+
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
@@ -24,6 +26,9 @@ class venation {
             kernel, 
             vertex_index_data_structure
         > delaunay_indexed;
+        typedef delaunay::Vertex_handle attractor_handle;
+        typedef delaunay_indexed::Vertex_handle node_handle;
+        typedef delaunay_indexed::Vertex_circulator node_circulator;
 
         enum type { open, closed };
 
@@ -41,6 +46,12 @@ class venation {
         void draw_nodes();
 
     private:
+        std::ptrdiff_t insert_node(const point2&);
+        void grow(const std::map<unsigned int, vector2>&);
+        bool has_consumed(unsigned int, const point2&);
+        void open_step();
+        void closed_step();
+
         type mode_;
 
         delaunay attractors_graph_;
