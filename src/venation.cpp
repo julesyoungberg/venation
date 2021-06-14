@@ -82,7 +82,7 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
         node_ref parent = nodes_[i.first];
         vector2 step = d * 0.002;
         point2 child_pos = point2(
-            parent->position.x() + step.y(),
+            parent->position.x() + step.x(),
             parent->position.y() + step.y()
         );
         node_ref child_node = node::create(child_pos);
