@@ -10,6 +10,7 @@ set(CMAKE_BUILD_TYPE "Release")
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(CGAL REQUIRED)
+find_package(Boost 1.75 REQUIRED COMPONENTS program_options)
 
 if (APPLE)
     find_package(glfw3 REQUIRED)
@@ -27,7 +28,8 @@ add_executable(app src/main.cpp src/app.hpp src/app.cpp src/node.hpp
     src/node.cpp src/venation.hpp src/venation.cpp)
 
 target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
-    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ./lib)
+    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
-target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL)
+target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
+    ${Boost_LIBRARIES})
 
