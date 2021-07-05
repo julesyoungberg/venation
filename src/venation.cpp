@@ -22,13 +22,13 @@ void venation::generate_attractors() {
     constexpr int num_attractors = 5000;
     double x;
     double y;
-    std::vector<point2> attractors(num_attractors);
+    std::vector<venation::point2> attractors(num_attractors);
 
     // generate random points
     for (int i = 0; i < num_attractors; ++i) {
         x = rnd() * 2.0 - 1.0;
         y = rnd() * 2.0 - 1.0;
-        attractors[i] = point2(x, y);
+        attractors[i] = venation::point2(x, y);
     }
 
     // add them to delaunay triangulation graph
@@ -50,7 +50,7 @@ std::ptrdiff_t venation::insert_node(const venation::point2& p) {
  * Seed the growth.
  */
 void venation::create_seed() {
-    point2 seed_point(0.0, 0.0);
+    venation::point2 seed_point(0.0, 0.0);
 
     insert_node(seed_point);
 
@@ -80,8 +80,8 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
 
         // 4. add new node
         node_ref parent = nodes_[i.first];
-        vector2 step = d * 0.002;
-        point2 child_pos = point2(
+        venation::vector2 step = d * 0.002;
+        venation::point2 child_pos = point2(
             parent->position.x() + step.x(),
             parent->position.y() + step.y()
         );
@@ -122,7 +122,7 @@ bool venation::has_consumed(unsigned int node_id, const venation::point2& s) {
  */
 void venation::open_step() {
     // find the closest node to each attractor.
-    std::map<unsigned int, vector2> influences;
+    std::map<unsigned int, venation::vector2> influences;
     std::vector<venation::attractor_handle> influencing_attractors;
 
     for (auto it = attractors_graph_.finite_vertices_begin();
@@ -137,7 +137,7 @@ void venation::open_step() {
         if (dist > 0.0 && dist < 0.1) {
             influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
-            vector2 d = normalize(attractor - point);
+            venation::vector2 d = normalize(attractor - point);
             auto l = influences.find(index);
             if (l == influences.end()) {
                 influences[index] = d;
@@ -166,7 +166,7 @@ void venation::open_step() {
  */
 void venation::closed_step() {
     // 1. associate every attractor with the nearest growth nodes
-    std::map<unsigned int, vector2> influences;
+    std::map<unsigned int, venation::vector2> influences;
     std::vector<
         std::pair<venation::attractor_handle, std::vector<unsigned int>>
     > influencing_attractors;
@@ -225,7 +225,7 @@ void venation::closed_step() {
             if (v_s > 0.0 && v_s < 0.1) {
                 // 2. sum the difference vectors for each node
                 influenced_node_ids.push_back(v_handle->info());
-                vector2 d = normalize(s - v);
+                venation::vector2 d = normalize(s - v);
                 auto id = v_handle->info();
                 auto l = influences.find(id);
                 if (l == influences.end()) {
