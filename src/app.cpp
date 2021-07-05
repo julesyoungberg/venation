@@ -9,6 +9,19 @@
 
 #include "app.hpp"
 
+void App::configure(
+    unsigned int width, unsigned int height,
+    unsigned int num_attractors, std::string mode, 
+    unsigned int timeout, long double growth_radius,
+    long double growth_rate, long double consume_radius
+) {
+    width_ = width;
+    height_ = height;
+    timeout_ = timeout;
+    venation_.configure(width, height, num_attractors, mode, growth_radius, 
+        growth_rate, consume_radius);
+}
+
 void App::setup() {
     venation_.generate_attractors();
     venation_.create_seed();

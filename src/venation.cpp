@@ -15,17 +15,35 @@ double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 }
 
+void venation::configure(
+    unsigned int width, unsigned int height,
+    unsigned int num_attractors, std::string mode, 
+    long double growth_radius, long double growth_rate,
+    long double consume_radius
+) {
+    width_ = width;
+    height_ = height;
+    num_attractors_ = num_attractors;
+    growth_radius_ = growth_radius;
+    growth_rate = growth_rate;
+
+    if (mode.compare("closed") == 0) {
+        mode_ = venation::type::closed;
+    } else {
+        mode_ = venation::type::open;
+    }
+}
+
 /**
  * Generates an initial set of attractors
  */
 void venation::generate_attractors() {
-    constexpr int num_attractors = 5000;
     double x;
     double y;
-    std::vector<venation::point2> attractors(num_attractors);
+    std::vector<venation::point2> attractors(num_attractors_);
 
     // generate random points
-    for (int i = 0; i < num_attractors; ++i) {
+    for (int i = 0; i < num_attractors_; ++i) {
         x = rnd() * 2.0 - 1.0;
         y = rnd() * 2.0 - 1.0;
         attractors[i] = venation::point2(x, y);
@@ -80,7 +98,7 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
 
         // 4. add new node
         node_ref parent = nodes_[i.first];
-        venation::vector2 step = d * 0.002;
+        venation::vector2 step = d * growth_rate_;
         venation::point2 child_pos = point2(
             parent->position.x() + step.x(),
             parent->position.y() + step.y()
@@ -100,16 +118,15 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
  */
 bool venation::has_consumed(unsigned int node_id, const venation::point2& s) {
     node_ref node = nodes_[node_id];
-    double kill_dist = 0.0005;
 
     // check if the node is within kill distance
-    if (distance(node->position, s) < kill_dist) {
+    if (distance(node->position, s) < consume_radius_) {
         return true;
     }
 
     // otherwise, check if any childen are within kill distance
     for (const auto& child : node->children) {
-        if (distance(s, child->position) < kill_dist) {
+        if (distance(s, child->position) < consume_radius_) {
             return true;
         }
     }
@@ -134,7 +151,7 @@ void venation::open_step() {
         auto index = vertex->info();
         auto dist = distance(attractor, point);
 
-        if (dist > 0.0 && dist < 0.1) {
+        if (dist > 0.0 && dist < growth_radius_) {
             influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
             venation::vector2 d = normalize(attractor - point);
@@ -222,7 +239,7 @@ void venation::closed_step() {
                 continue;
             }
 
-            if (v_s > 0.0 && v_s < 0.1) {
+            if (v_s > 0.0 && v_s < growth_radius_) {
                 // 2. sum the difference vectors for each node
                 influenced_node_ids.push_back(v_handle->info());
                 venation::vector2 d = normalize(s - v);

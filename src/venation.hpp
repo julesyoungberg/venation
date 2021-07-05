@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 #include <vector>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -39,6 +40,12 @@ class venation {
         std::vector<node_ref>& get_nodes() { return nodes_; }
 
         void set_mode(type mode) { mode_ = mode; }
+
+        void configure(unsigned int width, unsigned int height,
+            unsigned int num_attractors, std::string mode, 
+            long double growth_radius, long double growth_rate,
+            long double consume_radius);
+
         void generate_attractors();
         void create_seed();
         void update();
@@ -58,6 +65,13 @@ class venation {
 
         std::vector<node_ref> nodes_;
         delaunay_indexed nodes_graph_;
+
+        unsigned int width_ = 512;
+        unsigned int height_ = 512;
+        unsigned int num_attractors_ = 5000;
+        long double growth_radius_ = 0.1;
+        long double growth_rate_ = 0.002;
+        long double consume_radius_ = 0.0005;
 
 };
 
