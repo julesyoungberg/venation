@@ -23,6 +23,7 @@ void venation::configure(
 ) {
     width_ = width;
     height_ = height;
+    aspect_ratio_ = double(width) / double(height);
     num_attractors_ = num_attractors;
     growth_radius_ = growth_radius;
     growth_rate = growth_rate;
@@ -44,7 +45,7 @@ void venation::generate_attractors() {
 
     // generate random points
     for (int i = 0; i < num_attractors_; ++i) {
-        x = rnd() * 2.0 - 1.0;
+        x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
         y = rnd() * 2.0 - 1.0;
         attractors[i] = venation::point2(x, y);
     }
@@ -302,7 +303,7 @@ void venation::draw_attractors() {
         for (auto it = attractors_graph_.finite_vertices_begin();
                 it != attractors_graph_.finite_vertices_end(); ++it) {
             auto v = it->point();
-            glVertex2d(v.x(), v.y());
+            glVertex2d(v.x() / aspect_ratio_, v.y());
         }
     glEnd();
 }
@@ -322,8 +323,8 @@ void venation::draw_nodes() {
             to_visit.push_back(child);
             glLineWidth(child->width * 3.0);
             glBegin(GL_LINES);
-                glVertex2d(node->position.x(), node->position.y());
-                glVertex2d(child->position.x(), child->position.y());
+                glVertex2d(node->position.x() / aspect_ratio_, node->position.y());
+                glVertex2d(child->position.x() / aspect_ratio_, child->position.y());
             glEnd();
         }
     }

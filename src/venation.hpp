@@ -68,6 +68,7 @@ class venation {
 
         unsigned int width_ = 512;
         unsigned int height_ = 512;
+        long double aspect_ratio_ = 1.0;
         unsigned int num_attractors_ = 5000;
         long double growth_radius_ = 0.1;
         long double growth_rate_ = 0.002;
