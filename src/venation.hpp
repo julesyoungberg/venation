@@ -42,12 +42,12 @@ class venation {
         void set_mode(type mode) { mode_ = mode; }
 
         void configure(unsigned int width, unsigned int height,
-            unsigned int num_attractors, std::string mode, 
+            unsigned int num_attractors, const std::string& mode, 
             long double growth_radius, long double growth_rate,
-            long double consume_radius);
+            long double consume_radius, std::vector<point2>& seeds);
 
         void generate_attractors();
-        void create_seed();
+        void create_seeds();
         void update();
         void draw_attractors();
         void draw_nodes();
@@ -63,6 +63,7 @@ class venation {
 
         delaunay attractors_graph_;
 
+        std::vector<point2> seeds_;
         std::vector<node_ref> nodes_;
         delaunay_indexed nodes_graph_;
 

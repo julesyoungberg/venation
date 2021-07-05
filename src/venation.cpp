@@ -17,9 +17,10 @@ double rnd() {
 
 void venation::configure(
     unsigned int width, unsigned int height,
-    unsigned int num_attractors, std::string mode, 
+    unsigned int num_attractors, const std::string& mode, 
     long double growth_radius, long double growth_rate,
-    long double consume_radius
+    long double consume_radius,
+    std::vector<venation::point2>& seeds
 ) {
     width_ = width;
     height_ = height;
@@ -33,6 +34,8 @@ void venation::configure(
     } else {
         mode_ = venation::type::open;
     }
+
+    seeds_ = seeds;
 }
 
 /**
@@ -68,14 +71,19 @@ std::ptrdiff_t venation::insert_node(const venation::point2& p) {
 /*
  * Seed the growth.
  */
-void venation::create_seed() {
-    venation::point2 seed_point(0.0, 0.0);
+void venation::create_seeds() {
+    if (seeds_.size() == 0) {
+        seeds_.push_back(venation::point2(0.0, 0.0));
+    }
 
-    insert_node(seed_point);
+    nodes_.clear();
 
-    // add the node to the node index vector.
-    node_ref seed_node = node::create(seed_point);
-    nodes_.push_back(seed_node);
+    for (const auto& seed : seeds_) {
+        // insert node to dilaunay graph
+        insert_node(seed);
+        // add the node to the node index vector.
+        nodes_.push_back(node::create(seed));
+    }
 }
 
 venation::vector2 normalize(const venation::vector2& p) {
@@ -293,7 +301,9 @@ void venation::update() {
         closed_step();
     }
 
-    nodes_[0]->update_width();
+    for (unsigned i = 0; i < seeds_.size(); ++i) {
+        nodes_[i]->update_width();
+    }
 }
 
 void venation::draw_attractors() {
@@ -309,23 +319,25 @@ void venation::draw_attractors() {
 }
 
 void venation::draw_nodes() {
-    std::vector<node_ref> to_visit;
-    to_visit.push_back(nodes_[0]);
+    for (unsigned i = 0; i < seeds_.size(); ++i) {
+        std::vector<node_ref> to_visit;
+        to_visit.push_back(nodes_[i]);
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glLineWidth(3.0f);
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glLineWidth(3.0f);
 
-    while (to_visit.size() > 0) {
-        auto node = to_visit.back();
-        to_visit.pop_back();
+        while (to_visit.size() > 0) {
+            auto node = to_visit.back();
+            to_visit.pop_back();
 
-        for (auto child : node->children) {
-            to_visit.push_back(child);
-            glLineWidth(child->width * 3.0);
-            glBegin(GL_LINES);
-                glVertex2d(node->position.x() / aspect_ratio_, node->position.y());
-                glVertex2d(child->position.x() / aspect_ratio_, child->position.y());
-            glEnd();
+            for (auto child : node->children) {
+                to_visit.push_back(child);
+                glLineWidth(child->width * 3.0);
+                glBegin(GL_LINES);
+                    glVertex2d(node->position.x() / aspect_ratio_, node->position.y());
+                    glVertex2d(child->position.x() / aspect_ratio_, child->position.y());
+                glEnd();
+            }
         }
     }
 }

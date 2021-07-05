@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "venation.hpp"
 
@@ -10,9 +11,10 @@ class App {
         ~App() = default;
 
         void configure(unsigned int width, unsigned int height,
-            unsigned int num_attractors, std::string mode, 
+            unsigned int num_attractors, const std::string& mode, 
             unsigned int timeout, long double growth_radius,
-            long double growth_rate, long double consume_radius);
+            long double growth_rate, long double consume_radius,
+            std::vector<venation::point2>& seeds);
         void setup();
         void update();
         void draw();

@@ -1,6 +1,9 @@
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <regex>
 #include <string>
+#include <vector>
 
 #include <boost/program_options.hpp>
 
@@ -11,6 +14,7 @@
 #include <GLFW/glfw3.h>
 
 #include "app.hpp"
+#include "venation.hpp"
 
 namespace po = boost::program_options;
 
@@ -41,6 +45,12 @@ int run_app(App& app, const char* name) {
     return EXIT_SUCCESS;
 }
 
+void erase_all(std::string& str, char c) {
+    if (str.find(c) != std::string::npos) {
+        str.erase(std::remove(str.begin(), str.end(), c), str.end());
+    }
+}
+
 int main(int argc, const char* argv[]) {
     App app;
     
@@ -53,6 +63,7 @@ int main(int argc, const char* argv[]) {
     long double growth_radius = 0.1;
     long double growth_rate = 0.002;
     long double consume_radius = 0.0005;
+    std::vector<venation::point2> seeds;
 
     // parse command line options
     try {
@@ -67,7 +78,9 @@ int main(int argc, const char* argv[]) {
                 "Number of random attractors to generate. Defaults to 5000.")
             ("seeds", po::value<std::string>(),
                 "A list of 2D points to start growing from. Input should be of "
-                " the form: (x1,y2),(x2,y2). Defaults to (width/2, height/2).")
+                " the form \"(x1,y2),...,(xn,yn)\" where each x is in "
+                "[-width/2,width/2], and each y is in [-height/2,height/2]. "
+                "Defaults to (0,0).")
             ("mode", po::value<std::string>(),
                 "Growth mode, 'open' or 'closed' venation styles. "
                 "Defaults to 'open'.")
@@ -77,7 +90,7 @@ int main(int argc, const char* argv[]) {
                 "terminate. Defaults to 500.")
             ("growth-radius", po::value<long double>(),
                 "The maximum distance an attractor can be from a growth node "
-                "and still influence it (relative to normalized points)."
+                "and still influence it (relative to normalized points). "
                 "Defaults to 0.1.")
             ("growth-rate", po::value<long double>(),
                 "The size of the step taken at each growth step (relative to "
@@ -119,7 +132,54 @@ int main(int argc, const char* argv[]) {
         }
 
         if (vm.count("seeds")) {
-            // TODO
+            // validate the input with a regex
+            std::string floating_point_regex = "[+-]?([0-9]*[.])?[0-9]+";
+            std::string point_regex = "\\(" + floating_point_regex + "," + floating_point_regex + "\\)";
+            std::string seeds_regex = "^" + point_regex + "(," + point_regex + ")*$";
+            std::regex regex(seeds_regex);
+            
+            std::string input = vm["seeds"].as<std::string>();
+            if (std::regex_match(input, regex) == 0) {
+                std::cout << "Invalid seeds input, expected string of the form "
+                    << "\"(x1,y1),...,(xn,yn)\", example: \"(-10.5,2.9),(300,250)\"\n";
+                return EXIT_FAILURE;
+            }
+
+            // parse the input
+            std::vector<std::string> point_strings;
+            std::size_t pos = 0;
+            std::string delimiter = "),(";
+
+            // find each occurence of the delimiter
+            while ((pos = input.find(delimiter)) != std::string::npos) {
+                point_strings.push_back(input.substr(0, pos));
+                input.erase(0, pos + delimiter.length());
+            }
+
+            // push the last part of the string
+            point_strings.push_back(input);
+
+            // parse each point string
+            for (auto& point_str : point_strings) {
+                // remove leftover parenthesis
+                erase_all(point_str, '(');
+                erase_all(point_str, ')');
+
+                // find the , that splits the x and y coord
+                std::size_t pos = point_str.find(",");
+                if (pos == std::string::npos) {
+                    continue;
+                }
+
+                // read x and y coords from string
+                std::string x_token = point_str.substr(0, pos);
+                std::string y_token = point_str.substr(pos + 1, point_str.length());
+                double x = std::stod(x_token) / (width / 2.0);
+                double y = std::stod(y_token) / (height / 2.0);
+
+                // save point in seeds vector
+                seeds.push_back(venation::point2(x, y));
+            }
         }
 
         if (vm.count("mode")) {
@@ -148,7 +208,7 @@ int main(int argc, const char* argv[]) {
 
     // configure, setup, and run the app
     app.configure(width, height, num_attractors, mode, timeout, growth_radius, 
-        growth_rate, consume_radius);
+        growth_rate, consume_radius, seeds);
 
     app.setup();
 
