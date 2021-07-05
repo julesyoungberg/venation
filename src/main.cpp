@@ -78,9 +78,8 @@ int main(int argc, const char* argv[]) {
                 "Number of random attractors to generate. Defaults to 5000.")
             ("seeds", po::value<std::string>(),
                 "A list of 2D points to start growing from. Input should be of "
-                " the form \"(x1,y2),...,(xn,yn)\" where each x is in "
-                "[-width/2,width/2], and each y is in [-height/2,height/2]. "
-                "Defaults to (0,0).")
+                "the form \"(x1,y2),...,(xn,yn)\" where each x and y is in "
+                "the interval [-1, 1]. Defaults to (0,0).")
             ("mode", po::value<std::string>(),
                 "Growth mode, 'open' or 'closed' venation styles. "
                 "Defaults to 'open'.")
@@ -141,7 +140,7 @@ int main(int argc, const char* argv[]) {
             std::string input = vm["seeds"].as<std::string>();
             if (std::regex_match(input, regex) == 0) {
                 std::cout << "Invalid seeds input, expected string of the form "
-                    << "\"(x1,y1),...,(xn,yn)\", example: \"(-10.5,2.9),(300,250)\"\n";
+                    << "\"(x1,y1),...,(xn,yn)\", example: \"(-0.5,0.9),(0.1,0.25)\"\n";
                 return EXIT_FAILURE;
             }
 
@@ -174,8 +173,8 @@ int main(int argc, const char* argv[]) {
                 // read x and y coords from string
                 std::string x_token = point_str.substr(0, pos);
                 std::string y_token = point_str.substr(pos + 1, point_str.length());
-                double x = std::stod(x_token) / (width / 2.0);
-                double y = std::stod(y_token) / (height / 2.0);
+                double x = std::stod(x_token);
+                double y = std::stod(y_token);
 
                 // save point in seeds vector
                 seeds.push_back(venation::point2(x, y));

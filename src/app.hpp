@@ -14,7 +14,7 @@ class App {
             unsigned int num_attractors, const std::string& mode, 
             unsigned int timeout, long double growth_radius,
             long double growth_rate, long double consume_radius,
-            std::vector<venation::point2>& seeds);
+            const std::vector<venation::point2>& seeds);
         void setup();
         void update();
         void draw();

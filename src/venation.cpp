@@ -20,7 +20,7 @@ void venation::configure(
     unsigned int num_attractors, const std::string& mode, 
     long double growth_radius, long double growth_rate,
     long double consume_radius,
-    std::vector<venation::point2>& seeds
+    const std::vector<venation::point2>& seeds
 ) {
     width_ = width;
     height_ = height;
@@ -35,7 +35,10 @@ void venation::configure(
         mode_ = venation::type::open;
     }
 
-    seeds_ = seeds;
+    seeds_.clear();
+    for (const auto& seed : seeds) {
+        seeds_.push_back(venation::point2(seed.x() * aspect_ratio_, seed.y()));
+    }
 }
 
 /**

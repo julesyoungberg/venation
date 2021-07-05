@@ -44,7 +44,7 @@ class venation {
         void configure(unsigned int width, unsigned int height,
             unsigned int num_attractors, const std::string& mode, 
             long double growth_radius, long double growth_rate,
-            long double consume_radius, std::vector<point2>& seeds);
+            long double consume_radius, const std::vector<point2>& seeds);
 
         void generate_attractors();
         void create_seeds();
