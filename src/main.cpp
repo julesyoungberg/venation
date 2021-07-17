@@ -222,10 +222,15 @@ int main(int argc, const char* argv[]) {
     }
 
     // configure, setup, and run the app
-    app.configure(width, height, num_attractors, mode, timeout, growth_radius, 
-        growth_rate, consume_radius, seeds);
-
-    app.setup();
+    app
+        .num_attractors(num_attractors)
+        .mode(mode)
+        .timeout(timeout)
+        .growth_radius(growth_radius)
+        .growth_rate(growth_rate)
+        .consume_radius(consume_radius)
+        .configure(width, height, seeds)
+        .setup();
 
     return run_app(argv[0]);
 }

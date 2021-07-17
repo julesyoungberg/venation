@@ -15,30 +15,30 @@ double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 }
 
-void venation::configure(
-    unsigned int width, unsigned int height,
-    unsigned int num_attractors, const std::string& mode, 
-    long double growth_radius, long double growth_rate,
-    long double consume_radius,
+venation& venation::configure(
+    unsigned int width, unsigned int height, 
     const std::vector<venation::point2>& seeds
 ) {
     width_ = width;
     height_ = height;
     aspect_ratio_ = double(width) / double(height);
-    num_attractors_ = num_attractors;
-    growth_radius_ = growth_radius;
-    growth_rate = growth_rate;
 
+    seeds_.clear();
+    for (const auto& seed : seeds) {
+        seeds_.push_back(venation::point2(seed.x() * aspect_ratio_, seed.y()));
+    }
+
+    return *this;
+}
+
+venation& venation::mode(const std::string& mode) {
     if (mode.compare("closed") == 0) {
         mode_ = venation::type::closed;
     } else {
         mode_ = venation::type::open;
     }
 
-    seeds_.clear();
-    for (const auto& seed : seeds) {
-        seeds_.push_back(venation::point2(seed.x() * aspect_ratio_, seed.y()));
-    }
+    return *this;
 }
 
 /**

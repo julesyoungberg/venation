@@ -10,10 +10,7 @@ class App {
         App() = default;
         ~App() = default;
 
-        void configure(unsigned int width, unsigned int height,
-            unsigned int num_attractors, const std::string& mode, 
-            unsigned int timeout, long double growth_radius,
-            long double growth_rate, long double consume_radius,
+        App& configure(unsigned int width, unsigned int height,
             const std::vector<venation::point2>& seeds);
         void setup();
         void update();
@@ -24,6 +21,13 @@ class App {
 
         unsigned int width() { return width_; }
         unsigned int height() { return height_; }
+
+        App& timeout(unsigned int t) { timeout_ = t; return *this; }
+        App& num_attractors(unsigned int n) { venation_.num_attractors(n); return *this; }
+        App& mode(const std::string& m) { venation_.mode(m); return *this; }
+        App& growth_radius(long double r) { venation_.growth_radius(r); return *this; }
+        App& growth_rate(long double r) { venation_.growth_rate(r); return *this; }
+        App& consume_radius(long double r) { venation_.consume_radius(r); return *this; }
 
     private:
         venation venation_;

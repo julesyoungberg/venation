@@ -39,18 +39,22 @@ class venation {
         delaunay& get_attractors() { return attractors_graph_; }
         std::vector<node_ref>& get_nodes() { return nodes_; }
 
-        void set_mode(type mode) { mode_ = mode; }
 
-        void configure(unsigned int width, unsigned int height,
-            unsigned int num_attractors, const std::string& mode, 
-            long double growth_radius, long double growth_rate,
-            long double consume_radius, const std::vector<point2>& seeds);
+        venation& configure(unsigned int width, unsigned int height,
+            const std::vector<point2>& seeds);
 
         void generate_attractors();
         void create_seeds();
         void update();
         void draw_attractors();
         void draw_nodes();
+
+        venation& num_attractors(unsigned int n) { num_attractors_ = n; return *this; }
+        venation& mode(type mode) { mode_ = mode; return *this; }
+        venation& mode(const std::string& m);
+        venation& growth_radius(long double r) { growth_radius_ = r; return *this; }
+        venation& growth_rate(long double r) { growth_rate_ = r; return *this; }
+        venation& consume_radius(long double r) { consume_radius_ = r; return *this; }
 
     private:
         std::ptrdiff_t insert_node(const point2&);
