@@ -19,6 +19,9 @@ class App {
         void update();
         void draw();
 
+        void toggle_attractors() { show_attractors_ = !show_attractors_; }
+        void play_pause() { running_ = !running_; }
+
         unsigned int width() { return width_; }
         unsigned int height() { return height_; }
 
@@ -27,6 +30,8 @@ class App {
         unsigned int width_ = 512;
         unsigned int height_ = 512;
         unsigned int timeout_ = 500;
+        bool show_attractors_ = true;
+        bool running_ = true;
 
 };
 

@@ -18,7 +18,23 @@
 
 namespace po = boost::program_options;
 
-int run_app(App& app, const char* name) {
+App app;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (action != GLFW_PRESS) {
+        return;
+    }
+
+    if (key == GLFW_KEY_A) {
+        app.toggle_attractors();
+    }
+
+    if (key == GLFW_KEY_P) {
+        app.play_pause();
+    }
+}
+
+int run_app(const char* name) {
     // initialize app
     if (!glfwInit()) { return EXIT_FAILURE; }
     glfwSwapInterval(1);
@@ -30,6 +46,8 @@ int run_app(App& app, const char* name) {
         glfwTerminate();
         return EXIT_FAILURE;
     }
+
+    glfwSetKeyCallback(window, key_callback);
     
     // animate
     while (!glfwWindowShouldClose(window)) {
@@ -52,8 +70,6 @@ void erase_all(std::string& str, char c) {
 }
 
 int main(int argc, const char* argv[]) {
-    App app;
-    
     // app defaults
     unsigned int width = 512;
     unsigned int height = 512;
@@ -211,5 +227,5 @@ int main(int argc, const char* argv[]) {
 
     app.setup();
 
-    return run_app(app, argv[0]);
+    return run_app(argv[0]);
 }

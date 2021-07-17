@@ -29,14 +29,25 @@ void App::setup() {
 }
 
 void App::update() {
+    if (!running_) {
+        return;
+    }
+
     venation_.update();
 }
 
 void App::draw() {
+    if (!running_) {
+        return;
+    }
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    venation_.draw_attractors();
+    if (show_attractors_) {
+        venation_.draw_attractors();
+    }
+
     venation_.draw_nodes();
 
     glFlush();

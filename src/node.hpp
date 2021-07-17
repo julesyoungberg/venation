@@ -7,8 +7,8 @@
 typedef std::shared_ptr<struct node> node_ref;
 
 struct node {
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel kernel;
-    typedef kernel::Point_2 point2;
+    using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
+    using point2 = kernel::Point_2;
 
     node(const point2& p, double base_width = 0.1)
         : position(p), base_width(base_width), width(base_width) {}

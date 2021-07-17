@@ -12,24 +12,24 @@
 
 class venation {
     public:
-        typedef CGAL::Exact_predicates_inexact_constructions_kernel kernel;
-        typedef CGAL::Triangulation_vertex_base_with_info_2<
+        using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
+        using vertex_index = CGAL::Triangulation_vertex_base_with_info_2<
             unsigned int,
             kernel
-        > vertex_index;
-        typedef CGAL::Triangulation_data_structure_2<
+        >;
+        using vertex_index_data_structure = CGAL::Triangulation_data_structure_2<
             vertex_index
-        > vertex_index_data_structure;
-        typedef kernel::Point_2 point2;
-        typedef kernel::Vector_2 vector2;
-        typedef CGAL::Delaunay_triangulation_2<kernel>  delaunay;
-        typedef CGAL::Delaunay_triangulation_2<
+        >;
+        using point2 = kernel::Point_2;
+        using vector2 = kernel::Vector_2;
+        using delaunay = CGAL::Delaunay_triangulation_2<kernel>;
+        using delaunay_indexed = CGAL::Delaunay_triangulation_2<
             kernel, 
             vertex_index_data_structure
-        > delaunay_indexed;
-        typedef delaunay::Vertex_handle attractor_handle;
-        typedef delaunay_indexed::Vertex_handle node_handle;
-        typedef delaunay_indexed::Vertex_circulator node_circulator;
+        >;
+        using attractor_handle = delaunay::Vertex_handle;
+        using node_handle = delaunay_indexed::Vertex_handle;
+        using node_circulator = delaunay_indexed::Vertex_circulator;
 
         enum type { open, closed };
 
