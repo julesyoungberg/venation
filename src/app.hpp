@@ -1,9 +1,16 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <vector>
 
 #include <boost/gil/image.hpp>
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
+#include <GLFW/glfw3.h>
 
 #include "venation.hpp"
 
@@ -29,6 +36,8 @@ class App {
         App& growth_rate(long double r) { venation_.growth_rate(r); return *this; }
         App& consume_radius(long double r) { venation_.consume_radius(r); return *this; }
         App& mask_shades(unsigned int s) { mask_shades_ = s; return *this; }
+        App& out_file(const std::string& out_file) { out_file_ = out_file; return *this; }
+        App& window(GLFWwindow* w) { window_ = w; return *this; }
         
         App& set_mask(const boost::gil::rgb8_image_t img);
 
@@ -36,6 +45,8 @@ class App {
         unsigned int height() { return height_; }
 
     private:
+        void check_timeout();
+
         venation venation_;
         unsigned int width_ = 512;
         unsigned int height_ = 512;
@@ -43,6 +54,10 @@ class App {
         bool show_attractors_ = true;
         bool running_ = true;
         unsigned int mask_shades_ = 2;
+        std::string out_file_;
+        
+        std::chrono::time_point<std::chrono::system_clock> start_;
 
+        GLFWwindow* window_;
 };
 

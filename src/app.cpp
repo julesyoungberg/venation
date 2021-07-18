@@ -1,12 +1,11 @@
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 
-#ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION
-#endif
-
+#include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
+#include <boost/gil/extension/io/png.hpp>
 #include <CGAL/squared_distance_2.h>
-#include <GLFW/glfw3.h>
 
 #include "app.hpp"
 
@@ -54,9 +53,72 @@ App& App::set_mask(const boost::gil::rgb8_image_t img) {
 void App::setup() {
     venation_.generate_attractors();
     venation_.create_seeds();
+
+    if (timeout_ > 0.0) {
+        start_ = std::chrono::system_clock::now();
+    }
+}
+
+// https://lencerf.github.io/post/2019-09-21-save-the-opengl-rendering-to-image-file/
+void save_frame(const std::string& filepath, GLFWwindow* window) {
+    std::cout << "Saving frame...\n";
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glReadBuffer(GL_FRONT);
+    
+    GLubyte* data = (GLubyte*)malloc(width * height * 3);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+    boost::gil::rgb8_image_t img(width, height);
+    const boost::gil::rgb8_view_t& viewer = boost::gil::view(img);
+    
+    // copy pixel data into boost image object
+    for (int y = 0; y < viewer.height(); ++y) {
+        boost::gil::rgb8_view_t::x_iterator row = viewer.row_begin(y);
+        
+        for (int x = 0; x < viewer.width(); ++x) {
+            unsigned int index = ((height - y) * width + x) * 3;
+            boost::gil::at_c<0>(row[x]) = data[index];
+            boost::gil::at_c<1>(row[x]) = data[index + 1];
+            boost::gil::at_c<2>(row[x]) = data[index + 2];
+        }
+    }
+
+    boost::gil::write_view(filepath, boost::gil::view(img), 
+        boost::gil::png_tag());
+
+    std::cout << "Output written to " << filepath << ".\n";
+}
+
+void App::check_timeout() {
+    if (!running_ || timeout_ == 0.0) {
+        return;
+    }
+
+    auto now = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = now - start_;
+    double running_time = diff.count();
+    double timeout = (double)timeout_;
+
+    if (running_time >= (double)timeout_) {
+        // if an out file was provided,
+        // write to it and exit
+        if (!out_file_.empty()) {
+            save_frame(out_file_, window_);
+            exit(EXIT_SUCCESS);
+        } else {
+            // otherwise stop the simulation
+            running_ = false;
+        }
+    }
 }
 
 void App::update() {
+    check_timeout();
+
     if (!running_) {
         return;
     }

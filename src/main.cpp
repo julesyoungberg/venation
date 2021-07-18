@@ -15,7 +15,6 @@
 #include <boost/gil/typedefs.hpp>
 #include <boost/gil/extension/io/png.hpp>
 #include <boost/gil/extension/io/jpeg.hpp>
-#include <boost/gil/extension/io/tiff.hpp>
 #include <boost/program_options.hpp>
 
 #ifdef __APPLE__
@@ -59,6 +58,9 @@ int run_app(const char* name) {
     }
 
     glfwSetKeyCallback(window, key_callback);
+
+    app.window(window);
+    app.setup();
     
     // animate
     while (!glfwWindowShouldClose(window)) {
@@ -86,14 +88,15 @@ int main(int argc, const char* argv[]) {
     unsigned int height = 512;
     unsigned int num_attractors = 5000;
     std::string mode("open");
-    unsigned int timeout = 500;
+    unsigned int timeout = 0;
     long double growth_radius = 0.1;
     long double growth_rate = 0.002;
     long double consume_radius = 0.0005;
+    std::vector<venation::point2> seeds;
     unsigned int mask_shades = 2;
     boost::gil::rgb8_image_t mask_img;
     bool valid_mask_provided = false;
-    std::vector<venation::point2> seeds;
+    std::string out_file;
 
     // parse command line options
     try {
@@ -116,7 +119,7 @@ int main(int argc, const char* argv[]) {
             ("timeout", po::value<unsigned int>(),
                 "A time limit in seconds after which the simulation result "
                 "will be saved to the output file and the program will "
-                "terminate. Defaults to 500.")
+                "terminate. Defaults to never.")
             ("growth-radius", po::value<long double>(),
                 "The maximum distance an attractor can be from a growth node "
                 "and still influence it (relative to normalized points). "
@@ -140,7 +143,8 @@ int main(int argc, const char* argv[]) {
                 "is then used as a probability that an attractor at that "
                 "position will be kept.")
             ("outfile", po::value<std::string>(), 
-                "An image path to store the result at.");
+                "An image path to store the result at. The path must include "
+                "an extension and it must be png.");
 
         po::variables_map vm;
         po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -256,10 +260,11 @@ int main(int argc, const char* argv[]) {
             std::for_each(extension.begin(), extension.end(), [](char & c){
                 c = ::tolower(c);
             });
+            const char* ext = extension.c_str();
 
-            if (strcmp(extension.c_str(), "png") == 0) {
+            if (strcmp(ext, "png") == 0) {
                 boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::png_tag());
-            } else if (strcmp(extension.c_str(), "jpg") == 0 || strcmp(extension.c_str(), "jpeg") == 0) {
+            } else if (strcmp(ext, "jpg") == 0 || strcmp(ext, "jpeg") == 0) {
                 boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::jpeg_tag());
             } else {
                 std::cerr << "Error: invalid mask file extension '" << extension 
@@ -268,6 +273,30 @@ int main(int argc, const char* argv[]) {
             }
 
             valid_mask_provided = true;
+        }
+
+        if (vm.count("outfile")) {
+            out_file = vm["outfile"].as<std::string>();
+            std::vector<std::string> parts;
+            boost::split(parts, out_file, boost::is_any_of("."));
+
+            if (parts.size() < 2) {
+                std::cerr << "Error invalid outfile '" << out_file
+                    << "', expected a path with a png extension.\n";
+                return EXIT_FAILURE;
+            }
+
+            std::string extension = parts[parts.size() - 1];
+            std::for_each(extension.begin(), extension.end(), [](char & c){
+                c = ::tolower(c);
+            });
+            const char* ext = extension.c_str();
+
+            if (strcmp(ext, "png") != 0) {
+                std::cerr << "Error: invalid outfile extension '" << extension 
+                    << "', expected png.\n";
+                return EXIT_FAILURE;
+            }
         }
     } catch (const po::error &ex) {
         std::cerr << ex.what() << '\n';
@@ -283,13 +312,12 @@ int main(int argc, const char* argv[]) {
         .growth_rate(growth_rate)
         .consume_radius(consume_radius)
         .configure(width, height)
-        .seeds(seeds);
+        .seeds(seeds)
+        .out_file(out_file);
 
     if (valid_mask_provided) {
         app.mask_shades(mask_shades).set_mask(mask_img);
     }
-    
-    app.setup();
 
     return run_app(argv[0]);
 }
