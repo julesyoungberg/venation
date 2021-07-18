@@ -50,7 +50,7 @@ class venation {
         venation& growth_radius(long double r) { growth_radius_ = r; return *this; }
         venation& growth_rate(long double r) { growth_rate_ = r; return *this; }
         venation& consume_radius(long double r) { consume_radius_ = r; return *this; }
-        venation& mask_data(const std::vector<float>& d) { mask_data_ = d; return *this; }
+        venation& mask_data(std::vector<float>& d);
 
         delaunay& get_attractors() { return attractors_graph_; }
         std::vector<node_ref>& get_nodes() { return nodes_; }

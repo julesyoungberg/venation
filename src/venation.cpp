@@ -41,6 +41,11 @@ venation& venation::mode(const std::string& mode) {
     return *this;
 }
 
+venation& venation::mask_data(std::vector<float>& d) {
+    mask_data_.swap(d);
+    return *this;
+}
+
 /**
  * Generates an initial set of attractors
  */
@@ -60,9 +65,9 @@ void venation::generate_attractors() {
         // generate points based on mask brightness
         for (int y = 0; y < height_; ++y) {
             for (int x = 0; x < width_; ++x) {
-                auto brightness = mask_data_[y * width_ + x];
+                float brightness = mask_data_[y * width_ + x];
 
-                if (rnd() < brightness * 0.5) {
+                if (rnd() < brightness * 0.1) {
                     double nx = ((double)x * 2.0 / (double)width_ - 1.0);
                     nx *= aspect_ratio_;
                     double ny = (double)y * 2.0 / (double)height_ - 1.0;
@@ -71,6 +76,8 @@ void venation::generate_attractors() {
                 }
             }
         }
+
+        std::cout << "num attractors: " << attractors.size() << '\n';
     }
 
     // add them to delaunay triangulation graph

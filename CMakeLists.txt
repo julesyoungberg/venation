@@ -1,7 +1,7 @@
 # setup
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 project(branching_growth LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_MODULE_PATH /)
 set(CMAKE_BUILD_TYPE "Release")
@@ -35,5 +35,5 @@ target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS}
     ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${TIFF_INCLUDE_DIR})
 
 target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
-    ${Boost_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${TIFF_LIBRARIES})
+    ${Boost_LIBRARIES} JPEG::JPEG PNG::PNG TIFF::TIFF)
 

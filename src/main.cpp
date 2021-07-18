@@ -1,9 +1,14 @@
 #include <algorithm>
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <regex>
 #include <string>
 #include <vector>
+
+#include <png.h>
+#include <jpeglib.h>
+#include <tiff.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/gil/image.hpp>
@@ -127,10 +132,10 @@ int main(int argc, const char* argv[]) {
                 "The number of shades to aggregate the mask down to. "
                 "Defaults to 2.")
             ("mask", po::value<std::string>(),
-                "A path to an image that will be used to mask the attractors. "
-                "i.e. generated attractors will only be kept for the "
-                "simulation if the corresponding pixel in the image is bright "
-                "enough. ")
+                "A path to a png or jpeg image file that will be used to mask "
+                "the attractors. i.e. generated attractors will only be kept "
+                "for the simulation if the corresponding pixel in the image "
+                "is bright enough. ")
             ("outfile", po::value<std::string>(), 
                 "An image path to store the result at.");
 
@@ -240,7 +245,7 @@ int main(int argc, const char* argv[]) {
 
             if (parts.size() < 2) {
                 std::cerr << "Error: invalid mask file '" << mask_file
-                    << "', expected a path to a png, jpeg, or tiff image file.\n";
+                    << "', expected a path to a png or jpeg image file.\n";
                 return EXIT_FAILURE;
             }
 
@@ -250,14 +255,12 @@ int main(int argc, const char* argv[]) {
             });
 
             if (strcmp(extension.c_str(), "png") == 0) {
-                boost::gil::read_image(mask_file, mask_img, boost::gil::png_tag());
+                boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::png_tag());
             } else if (strcmp(extension.c_str(), "jpg") == 0 || strcmp(extension.c_str(), "jpeg") == 0) {
-                boost::gil::read_image(mask_file, mask_img, boost::gil::jpeg_tag());
-            } else if (strcmp(extension.c_str(), "tiff") == 0) {
-                boost::gil::read_image(mask_file, mask_img, boost::gil::tiff_tag());
+                boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::jpeg_tag());
             } else {
                 std::cerr << "Error: invalid mask file extension '" << extension 
-                    << "', expected png, jpeg, or tiff.\n";
+                    << "', expected png or jpeg.\n";
                 return EXIT_FAILURE;
             }
 

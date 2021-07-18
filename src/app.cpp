@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 
 #ifdef __APPLE__
@@ -34,15 +35,16 @@ struct PixelInserter {
         float b = (float)boost::gil::at_c<2>(p) / 255.0f;
 
         float a = (r + g + b) / 3.0;
-        int quantized = (int)(a * (float)n_shades);
-        float result = (float)quantized / n_shades;
+        float quantized = round((a * (float)n_shades));
+        float result = quantized / n_shades;
 
         storage->push_back(result);
     }
 };
 
 App& App::set_mask(const boost::gil::rgb8_image_t img) {
-    std::vector<float> img_data(img.width() * img.height());
+    std::vector<float> img_data;
+    img_data.reserve(img.width() * img.height());
     boost::gil::for_each_pixel(boost::gil::const_view(img), PixelInserter(&img_data, mask_shades_));
     configure(img.width(), img.height());
     venation_.mask_data(img_data);

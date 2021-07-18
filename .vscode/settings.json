@@ -93,7 +93,10 @@
     "stop_token": "cpp",
     "cfenv": "cpp",
     "filesystem": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "csetjmp": "cpp",
+    "regex": "cpp",
+    "shared_mutex": "cpp"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
