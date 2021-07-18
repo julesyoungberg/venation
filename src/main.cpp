@@ -238,23 +238,22 @@ int main(int argc, const char* argv[]) {
             std::vector<std::string> parts;
             boost::split(parts, mask_file, boost::is_any_of("."));
 
-            if (parts.size() != 2) {
+            if (parts.size() < 2) {
                 std::cerr << "Error: invalid mask file '" << mask_file
                     << "', expected a path to a png, jpeg, or tiff image file.\n";
                 return EXIT_FAILURE;
             }
 
-            std::string extension = parts[1];
+            std::string extension = parts[parts.size() - 1];
             std::for_each(extension.begin(), extension.end(), [](char & c){
                 c = ::tolower(c);
             });
 
-            
             if (strcmp(extension.c_str(), "png") == 0) {
                 boost::gil::read_image(mask_file, mask_img, boost::gil::png_tag());
             } else if (strcmp(extension.c_str(), "jpg") == 0 || strcmp(extension.c_str(), "jpeg") == 0) {
                 boost::gil::read_image(mask_file, mask_img, boost::gil::jpeg_tag());
-            } else if (strcmp(extension.c_str(), "tiff")) {
+            } else if (strcmp(extension.c_str(), "tiff") == 0) {
                 boost::gil::read_image(mask_file, mask_img, boost::gil::tiff_tag());
             } else {
                 std::cerr << "Error: invalid mask file extension '" << extension 
