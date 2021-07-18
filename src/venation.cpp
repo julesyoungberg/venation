@@ -54,30 +54,22 @@ void venation::generate_attractors() {
     double y;
     std::vector<venation::point2> attractors;
 
-    if (mask_data_.size() == 0) {
-        // generate random points
-        for (int i = 0; i < num_attractors_; ++i) {
-            x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
-            y = rnd() * 2.0 - 1.0;
-            attractors.push_back(venation::point2(x, y));
-        }
-    } else {
-        // generate points based on mask brightness
-        for (int y = 0; y < height_; ++y) {
-            for (int x = 0; x < width_; ++x) {
-                float brightness = mask_data_[y * width_ + x];
+    // generate random points
+    for (int i = 0; i < num_attractors_; ++i) {
+        x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
+        y = rnd() * 2.0 - 1.0;
+        venation::point2 p(x, y);
 
-                if (rnd() < brightness * 0.1) {
-                    double nx = ((double)x * 2.0 / (double)width_ - 1.0);
-                    nx *= aspect_ratio_;
-                    double ny = (double)y * 2.0 / (double)height_ - 1.0;
-                
-                    attractors.push_back(venation::point2(nx, ny));
-                }
+        if (mask_data_.size() == 0) {
+            attractors.push_back(p);
+        } else {
+            int ix = (int)round((x * 0.5 + 0.5) * (float)width_);
+            int iy = (int)round((y * 0.5 + 0.5) * (float)height_);
+            float brightness = mask_data_[iy * width_ + ix];
+            if (rnd() < brightness) {
+                attractors.push_back(p);
             }
         }
-
-        std::cout << "num attractors: " << attractors.size() << '\n';
     }
 
     // add them to delaunay triangulation graph

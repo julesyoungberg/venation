@@ -129,13 +129,16 @@ int main(int argc, const char* argv[]) {
                 "the attractor is considered consumed and removed "
                 "(relative to normalized points). Defaults to 0.0005.")
             ("mask-shades", po::value<unsigned int>(),
-                "The number of shades to aggregate the mask down to. "
+                "The number of grayscale shades to quantize the mask down to. "
                 "Defaults to 2.")
             ("mask", po::value<std::string>(),
                 "A path to a png or jpeg image file that will be used to mask "
                 "the attractors. i.e. generated attractors will only be kept "
                 "for the simulation if the corresponding pixel in the image "
-                "is bright enough. ")
+                "is bright enough. The file is converted to grayscale and "
+                "quantized into `mask-shades` shades. The grayscale value "
+                "is then used as a probability that an attractor at that "
+                "position will be kept.")
             ("outfile", po::value<std::string>(), 
                 "An image path to store the result at.");
 
