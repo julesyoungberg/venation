@@ -65,7 +65,7 @@ void venation::generate_attractors() {
         } else {
             int ix = (int)round((x * 0.5 + 0.5) * (float)width_);
             int iy = (int)round((y * 0.5 + 0.5) * (float)height_);
-            float brightness = mask_data_[iy * width_ + ix];
+            float brightness = mask_data_[(height_ - iy) * width_ + ix];
             if (rnd() < brightness) {
                 attractors.push_back(p);
             }
