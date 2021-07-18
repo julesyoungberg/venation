@@ -10,6 +10,8 @@
 
 #include "node.hpp"
 
+namespace growth {
+
 class venation {
     public:
         using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
@@ -82,3 +84,4 @@ class venation {
 
 };
 
+}

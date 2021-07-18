@@ -1,6 +1,8 @@
 #include <cmath>
 
-#include "node.hpp"
+#include "growth/node.hpp"
+
+using namespace growth;
 
 /**
  * Update width by traversing the tree and computing the width

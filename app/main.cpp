@@ -24,9 +24,11 @@
 #include <GLFW/glfw3.h>
 
 #include "app.hpp"
-#include "venation.hpp"
+#include "growth/venation.hpp"
 
 namespace po = boost::program_options;
+
+using namespace growth;
 
 App app;
 

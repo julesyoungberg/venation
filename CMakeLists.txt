@@ -25,14 +25,17 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
 	add_compile_options("-frounding-math")
 endif()
 
-# application
-add_executable(app src/main.cpp src/app.hpp src/app.cpp src/node.hpp 
-    src/node.cpp src/venation.hpp src/venation.cpp)
-
-target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
+# build growth library
+add_library(growth lib/node.cpp lib/venation.cpp)
+target_include_directories(growth PUBLIC include ${GLFW_INCLUDE_DIRS} 
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
     ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
 
+# application
+add_executable(app app/main.cpp app/app.cpp)
+target_link_libraries(app growth)
+target_include_directories(app PUBLIC include ${GLFW_INCLUDE_DIRS} 
+    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
+    ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
 target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
     ${Boost_LIBRARIES} JPEG::JPEG PNG::PNG)
-

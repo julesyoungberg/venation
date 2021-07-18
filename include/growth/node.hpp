@@ -4,14 +4,18 @@
 #include <vector>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
+namespace growth {
+
 typedef std::shared_ptr<struct node> node_ref;
 
 struct node {
+
     using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
     using point2 = kernel::Point_2;
 
     node(const point2& p, double base_width = 0.1)
         : position(p), base_width(base_width), width(base_width) {}
+
     ~node() = default;
 
     double update_width();
@@ -24,5 +28,7 @@ struct node {
     point2 position;
     double width;
     double base_width;
+
 };
 
+}

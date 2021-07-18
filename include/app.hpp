@@ -12,7 +12,9 @@
 
 #include <GLFW/glfw3.h>
 
-#include "venation.hpp"
+#include "growth/venation.hpp"
+
+using namespace growth;
 
 class App {
     public:
@@ -51,7 +53,7 @@ class App {
         unsigned int width_ = 512;
         unsigned int height_ = 512;
         unsigned int timeout_ = 500;
-        bool show_attractors_ = true;
+        bool show_attractors_ = false;
         bool running_ = true;
         unsigned int mask_shades_ = 2;
         std::string out_file_;

@@ -9,6 +9,8 @@
 
 #include "app.hpp"
 
+using namespace growth;
+
 App& App::configure(unsigned int width, unsigned int height) {
     width_ = width;
     height_ = height;

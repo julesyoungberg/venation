@@ -9,7 +9,9 @@
 #include <CGAL/squared_distance_2.h>
 #include <GLFW/glfw3.h>
 
-#include "venation.hpp"
+#include "growth/venation.hpp"
+
+using namespace growth;
 
 double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
