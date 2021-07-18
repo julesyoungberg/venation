@@ -5,6 +5,12 @@
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
+#include <boost/gil/extension/io/png.hpp>
+#include <boost/gil/extension/io/jpeg.hpp>
+#include <boost/gil/extension/io/tiff.hpp>
 #include <boost/program_options.hpp>
 
 #ifdef __APPLE__
@@ -79,6 +85,9 @@ int main(int argc, const char* argv[]) {
     long double growth_radius = 0.1;
     long double growth_rate = 0.002;
     long double consume_radius = 0.0005;
+    unsigned int mask_shades = 2;
+    boost::gil::rgb8_image_t mask_img;
+    bool valid_mask_provided = false;
     std::vector<venation::point2> seeds;
 
     // parse command line options
@@ -114,6 +123,9 @@ int main(int argc, const char* argv[]) {
                 "The distance between an attractor and node at which point "
                 "the attractor is considered consumed and removed "
                 "(relative to normalized points). Defaults to 0.0005.")
+            ("mask-shades", po::value<unsigned int>(),
+                "The number of shades to aggregate the mask down to. "
+                "Defaults to 2.")
             ("mask", po::value<std::string>(),
                 "A path to an image that will be used to mask the attractors. "
                 "i.e. generated attractors will only be kept for the "
@@ -216,6 +228,42 @@ int main(int argc, const char* argv[]) {
         if (vm.count("consume-radius")) {
             consume_radius = vm["consume-radius"].as<long double>();
         }
+
+        if (vm.count("mask-shades")) {
+            mask_shades = vm["mask-shades"].as<unsigned int>();
+        }
+
+        if (vm.count("mask")) {
+            std::string mask_file = vm["mask"].as<std::string>();
+            std::vector<std::string> parts;
+            boost::split(parts, mask_file, boost::is_any_of("."));
+
+            if (parts.size() != 2) {
+                std::cerr << "Error: invalid mask file '" << mask_file
+                    << "', expected a path to a png, jpeg, or tiff image file.\n";
+                return EXIT_FAILURE;
+            }
+
+            std::string extension = parts[1];
+            std::for_each(extension.begin(), extension.end(), [](char & c){
+                c = ::tolower(c);
+            });
+
+            
+            if (strcmp(extension.c_str(), "png") == 0) {
+                boost::gil::read_image(mask_file, mask_img, boost::gil::png_tag());
+            } else if (strcmp(extension.c_str(), "jpg") == 0 || strcmp(extension.c_str(), "jpeg") == 0) {
+                boost::gil::read_image(mask_file, mask_img, boost::gil::jpeg_tag());
+            } else if (strcmp(extension.c_str(), "tiff")) {
+                boost::gil::read_image(mask_file, mask_img, boost::gil::tiff_tag());
+            } else {
+                std::cerr << "Error: invalid mask file extension '" << extension 
+                    << "', expected png, jpeg, or tiff.\n";
+                return EXIT_FAILURE;
+            }
+
+            valid_mask_provided = true;
+        }
     } catch (const po::error &ex) {
         std::cerr << ex.what() << '\n';
         return EXIT_FAILURE;
@@ -229,8 +277,14 @@ int main(int argc, const char* argv[]) {
         .growth_radius(growth_radius)
         .growth_rate(growth_rate)
         .consume_radius(consume_radius)
-        .configure(width, height, seeds)
-        .setup();
+        .configure(width, height)
+        .seeds(seeds);
+
+    if (valid_mask_provided) {
+        app.mask_shades(mask_shades).set_mask(mask_img);
+    }
+    
+    app.setup();
 
     return run_app(argv[0]);
 }

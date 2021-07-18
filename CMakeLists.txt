@@ -11,6 +11,9 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(CGAL REQUIRED)
 find_package(Boost 1.75 REQUIRED COMPONENTS program_options)
+find_package(JPEG REQUIRED)
+find_package(PNG REQUIRED)
+find_package(TIFF REQUIRED)
 
 if (APPLE)
     find_package(glfw3 REQUIRED)
@@ -28,8 +31,9 @@ add_executable(app src/main.cpp src/app.hpp src/app.cpp src/node.hpp
     src/node.cpp src/venation.hpp src/venation.cpp)
 
 target_include_directories(app PUBLIC ${GLFW_INCLUDE_DIRS} 
-    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
+    ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${TIFF_INCLUDE_DIR})
 
 target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
-    ${Boost_LIBRARIES})
+    ${Boost_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${TIFF_LIBRARIES})
 

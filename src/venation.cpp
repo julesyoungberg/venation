@@ -15,14 +15,14 @@ double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 }
 
-venation& venation::configure(
-    unsigned int width, unsigned int height, 
-    const std::vector<venation::point2>& seeds
-) {
+venation& venation::configure(unsigned int width, unsigned int height) {
     width_ = width;
     height_ = height;
     aspect_ratio_ = double(width) / double(height);
+    return *this;
+}
 
+venation& venation::seeds(const std::vector<venation::point2>& seeds) {
     seeds_.clear();
     for (const auto& seed : seeds) {
         seeds_.push_back(venation::point2(seed.x() * aspect_ratio_, seed.y()));
@@ -47,13 +47,30 @@ venation& venation::mode(const std::string& mode) {
 void venation::generate_attractors() {
     double x;
     double y;
-    std::vector<venation::point2> attractors(num_attractors_);
+    std::vector<venation::point2> attractors;
 
-    // generate random points
-    for (int i = 0; i < num_attractors_; ++i) {
-        x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
-        y = rnd() * 2.0 - 1.0;
-        attractors[i] = venation::point2(x, y);
+    if (mask_data_.size() == 0) {
+        // generate random points
+        for (int i = 0; i < num_attractors_; ++i) {
+            x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
+            y = rnd() * 2.0 - 1.0;
+            attractors.push_back(venation::point2(x, y));
+        }
+    } else {
+        // generate points based on mask brightness
+        for (int y = 0; y < height_; ++y) {
+            for (int x = 0; x < width_; ++x) {
+                auto brightness = mask_data_[y * width_ + x];
+
+                if (rnd() < brightness * 0.5) {
+                    double nx = ((double)x * 2.0 / (double)width_ - 1.0);
+                    nx *= aspect_ratio_;
+                    double ny = (double)y * 2.0 / (double)height_ - 1.0;
+                
+                    attractors.push_back(venation::point2(nx, ny));
+                }
+            }
+        }
     }
 
     // add them to delaunay triangulation graph

@@ -36,25 +36,24 @@ class venation {
         venation(type mode = type::open): mode_(mode) {}
         ~venation() = default;
 
-        delaunay& get_attractors() { return attractors_graph_; }
-        std::vector<node_ref>& get_nodes() { return nodes_; }
-
-
-        venation& configure(unsigned int width, unsigned int height,
-            const std::vector<point2>& seeds);
-
         void generate_attractors();
         void create_seeds();
         void update();
         void draw_attractors();
         void draw_nodes();
 
+        venation& configure(unsigned int width, unsigned int height);
+        venation& seeds(const std::vector<point2>& seeds);
         venation& num_attractors(unsigned int n) { num_attractors_ = n; return *this; }
         venation& mode(type mode) { mode_ = mode; return *this; }
         venation& mode(const std::string& m);
         venation& growth_radius(long double r) { growth_radius_ = r; return *this; }
         venation& growth_rate(long double r) { growth_rate_ = r; return *this; }
         venation& consume_radius(long double r) { consume_radius_ = r; return *this; }
+        venation& mask_data(const std::vector<float>& d) { mask_data_ = d; return *this; }
+
+        delaunay& get_attractors() { return attractors_graph_; }
+        std::vector<node_ref>& get_nodes() { return nodes_; }
 
     private:
         std::ptrdiff_t insert_node(const point2&);
@@ -78,6 +77,8 @@ class venation {
         long double growth_radius_ = 0.1;
         long double growth_rate_ = 0.002;
         long double consume_radius_ = 0.0005;
+
+        std::vector<float> mask_data_;
 
 };
 
