@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/gil/image.hpp>
+#include <boost/gil/typedefs.hpp>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
@@ -55,7 +57,9 @@ namespace growth {
             venation& growth_radius(long double r) { growth_radius_ = r; return *this; }
             venation& growth_rate(long double r) { growth_rate_ = r; return *this; }
             venation& consume_radius(long double r) { consume_radius_ = r; return *this; }
-            venation& mask_data(std::vector<float>& d);
+            venation& mask_shades(unsigned int n) { mask_shades_ = n; return *this; }
+            
+            venation& mask(const boost::gil::rgb8_image_t img);
 
             delaunay& get_attractors() { return attractors_graph_; }
             std::vector<node_ref>& get_nodes() { return nodes_; }
@@ -82,6 +86,7 @@ namespace growth {
             long double growth_radius_ = 0.1;
             long double growth_rate_ = 0.002;
             long double consume_radius_ = 0.0005;
+            unsigned int mask_shades_ = 2;
 
             std::vector<float> mask_data_;
 

@@ -318,7 +318,7 @@ int main(int argc, const char* argv[]) {
         .out_file(out_file);
 
     if (valid_mask_provided) {
-        app.mask_shades(mask_shades).set_mask(mask_img);
+        app.mask_shades(mask_shades).mask(mask_img);
     }
 
     return run_app(argv[0]);

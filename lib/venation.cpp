@@ -2,14 +2,16 @@
 #include <iostream>
 #include <map>
 
+#include <CGAL/squared_distance_2.h>
+
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
 #endif
 
-#include <CGAL/squared_distance_2.h>
 #include <GLFW/glfw3.h>
 
 #include "growth/venation.hpp"
+#include "img.hpp"
 
 using namespace growth;
 
@@ -43,8 +45,19 @@ venation& venation::mode(const std::string& mode) {
     return *this;
 }
 
-venation& venation::mask_data(std::vector<float>& d) {
-    mask_data_.swap(d);
+venation& venation::mask(const boost::gil::rgb8_image_t img) {
+    // Reconfigure. The input image's dimensions trump any configuration.
+    configure(img.width(), img.height());
+
+    mask_data_.clear();
+    mask_data_.reserve(img.width() * img.height());
+
+    // convert the image to black and white
+    boost::gil::for_each_pixel(
+        boost::gil::const_view(img), 
+        img::BlackAndWhitePixelInserter(&mask_data_, mask_shades_)
+    );
+
     return *this;
 }
 

@@ -25,22 +25,10 @@ App& App::seeds(const std::vector<venation::point2>& seeds) {
     return *this;
 }
 
-App& App::set_mask(const boost::gil::rgb8_image_t img) {
+App& App::mask(const boost::gil::rgb8_image_t img) {
     // Reconfigure. The input image's dimensions trump any configuration.
     configure(img.width(), img.height());
-
-    std::vector<float> img_data;
-    img_data.reserve(img.width() * img.height());
-
-    // convert the image to black and white
-    boost::gil::for_each_pixel(
-        boost::gil::const_view(img), 
-        img::BlackAndWhitePixelInserter(&img_data, mask_shades_)
-    );
-
-    // pass it down
-    venation_.mask_data(img_data);
-
+    venation_.mask(img);
     return *this;
 }
 

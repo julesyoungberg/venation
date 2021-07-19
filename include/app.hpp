@@ -41,7 +41,7 @@ class App {
         App& out_file(const std::string& out_file) { out_file_ = out_file; return *this; }
         App& window(GLFWwindow* w) { window_ = w; return *this; }
         
-        App& set_mask(const boost::gil::rgb8_image_t img);
+        App& mask(const boost::gil::rgb8_image_t img);
 
         unsigned int width() { return width_; }
         unsigned int height() { return height_; }
