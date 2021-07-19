@@ -6,29 +6,27 @@
 
 namespace growth {
 
-typedef std::shared_ptr<struct node> node_ref;
+    typedef std::shared_ptr<struct node> node_ref;
 
-struct node {
+    // Structure for representing a node in the growth
+    struct node {
+        using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
+        using point2 = kernel::Point_2;
 
-    using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
-    using point2 = kernel::Point_2;
+        node(const point2& p, double base_width = 0.1)
+            : position(p), base_width(base_width), width(base_width) {}
 
-    node(const point2& p, double base_width = 0.1)
-        : position(p), base_width(base_width), width(base_width) {}
+        ~node() = default;
 
-    ~node() = default;
+        double update_width();
 
-    double update_width();
+        static node_ref create(const point2& p);
 
-    static node_ref create(const point2& p) {
-        return std::make_shared<node>(p);
-    }
+        std::vector<node_ref> children;
+        point2 position;
+        double width;
+        double base_width;
 
-    std::vector<node_ref> children;
-    point2 position;
-    double width;
-    double base_width;
-
-};
+    };
 
 }

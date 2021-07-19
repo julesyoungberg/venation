@@ -2,13 +2,11 @@
 
 #include "growth/node.hpp"
 
-using namespace growth;
-
 /**
  * Update width by traversing the tree and computing the width
  * of each node's children.
  */
-double node::update_width() {
+double growth::node::update_width() {
     if (children.size() == 0) {
         width = base_width;
     } else if (children.size() == 1) {
@@ -24,4 +22,8 @@ double node::update_width() {
     }
 
     return width;
+}
+
+growth::node_ref growth::node::create(const growth::node::point2& p) {
+    return std::make_shared<growth::node>(p);
 }
