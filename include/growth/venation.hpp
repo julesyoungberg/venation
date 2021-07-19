@@ -43,12 +43,14 @@ namespace growth {
             venation(type mode = type::open): mode_(mode) {}
             ~venation() = default;
 
+            // lifecycle
             void generate_attractors();
             void create_seeds();
             void update();
             void draw_attractors();
             void draw_nodes();
 
+            // setters
             venation& configure(unsigned int width, unsigned int height);
             venation& seeds(const std::vector<point2>& seeds);
             venation& num_attractors(unsigned int n) { num_attractors_ = n; return *this; }
@@ -58,11 +60,13 @@ namespace growth {
             venation& growth_rate(long double r) { growth_rate_ = r; return *this; }
             venation& consume_radius(long double r) { consume_radius_ = r; return *this; }
             venation& mask_shades(unsigned int n) { mask_shades_ = n; return *this; }
-            
             venation& mask(const boost::gil::rgb8_image_t img);
 
-            delaunay& get_attractors() { return attractors_graph_; }
-            std::vector<node_ref>& get_nodes() { return nodes_; }
+            // getters
+            delaunay& attractors() { return attractors_graph_; }
+            std::vector<node_ref>& nodes() { return nodes_; }
+            unsigned int width() { return width_; }
+            unsigned int height() { return height_; }
 
         private:
             std::ptrdiff_t insert_node(const point2&);
