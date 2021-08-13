@@ -2,3 +2,4 @@ dist
 *.swp
 *.spv
 build
+tmp_cmake

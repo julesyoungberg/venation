@@ -1,0 +1,8 @@
+name "Jules Youngberg"
+student_id "V00857936"
+email "julesdayoungberg@gmail.com"
+term "2021-05"
+course "SENG475"
+section "T01"
+assignment "cpp_project"
+

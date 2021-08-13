@@ -31,11 +31,17 @@ target_include_directories(growth PUBLIC include ${GLFW_INCLUDE_DIRS}
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
     ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
 
-# application
-add_executable(app app/main.cpp app/app.cpp)
-target_link_libraries(app growth)
-target_include_directories(app PUBLIC include ${GLFW_INCLUDE_DIRS} 
+# build application
+add_executable(venation app/main.cpp app/venation.cpp)
+target_link_libraries(venation growth)
+target_include_directories(venation PUBLIC include ${GLFW_INCLUDE_DIRS} 
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
     ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
-target_link_libraries(app OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
+target_link_libraries(venation OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
     ${Boost_LIBRARIES} JPEG::JPEG PNG::PNG)
+
+# Install the hello and goodbye programs.
+install(TARGETS venation DESTINATION bin)
+
+# Install the demo script.
+install(PROGRAMS demo DESTINATION bin)
