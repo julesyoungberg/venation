@@ -26,6 +26,7 @@ class App {
 
         // lifecycle
         int parse_options(int argc, const char* argv[]);
+        void scale_to_fit(int, int);
         void setup();
         void update();        
         void draw();

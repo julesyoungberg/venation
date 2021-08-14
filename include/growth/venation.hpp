@@ -44,8 +44,8 @@ namespace growth {
             ~venation() = default;
 
             // lifecycle
-            void generate_attractors();
-            void create_seeds();
+            void scale_to_fit(int, int);
+            void setup();
             void update();
             void draw_attractors();
             void draw_nodes();
@@ -60,7 +60,7 @@ namespace growth {
             venation& growth_rate(long double r) { growth_rate_ = r; return *this; }
             venation& consume_radius(long double r) { consume_radius_ = r; return *this; }
             venation& mask_shades(unsigned int n) { mask_shades_ = n; return *this; }
-            venation& mask(const boost::gil::rgb8_image_t img);
+            venation& mask(const boost::gil::rgb8_image_t& img);
 
             // getters
             delaunay& attractors() { return attractors_graph_; }
@@ -69,6 +69,10 @@ namespace growth {
             unsigned int height() { return height_; }
 
         private:
+            void prepare_mask();
+            void generate_attractors();
+            void create_seeds();
+
             std::ptrdiff_t insert_node(const point2&);
             void grow(const std::map<unsigned int, vector2>&);
             bool has_consumed(unsigned int, const point2&);
@@ -92,6 +96,7 @@ namespace growth {
             long double consume_radius_ = 0.0005;
             unsigned int mask_shades_ = 2;
 
+            boost::gil::rgb8_image_t mask_img_;
             std::vector<float> mask_data_;
 
     };

@@ -43,6 +43,9 @@ int main(int argc, const char* argv[]) {
     if (!glfwInit()) { return EXIT_FAILURE; }
     glfwSwapInterval(1);
 
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    app.scale_to_fit(mode->width, mode->height);
+
     // create window
     GLFWwindow* window = glfwCreateWindow(app.width(), app.height(), argv[0], 
         nullptr, nullptr);
@@ -58,7 +61,7 @@ int main(int argc, const char* argv[]) {
     app.window(window);
     app.setup();
     
-    // animate
+    // animate"
     while (!glfwWindowShouldClose(window)) {
         app.update();
         glfwMakeContextCurrent(window);

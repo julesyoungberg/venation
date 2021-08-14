@@ -2,6 +2,8 @@
 #include <iostream>
 #include <map>
 
+#include <boost/gil/extension/numeric/sampler.hpp>
+#include <boost/gil/extension/numeric/resample.hpp>
 #include <CGAL/squared_distance_2.h>
 
 #ifdef __APPLE__
@@ -45,20 +47,47 @@ venation& venation::mode(const std::string& mode) {
     return *this;
 }
 
-venation& venation::mask(const boost::gil::rgb8_image_t img) {
+venation& venation::mask(const boost::gil::rgb8_image_t& img) {
+    mask_img_ = img;
     // Reconfigure. The input image's dimensions trump any configuration.
-    configure(img.width(), img.height());
+    configure(mask_img_.width(), mask_img_.height());
+    return *this;
+}
 
+void venation::scale_to_fit(int window_width, int window_height) {
+    auto width = width_;
+    auto height = height_;
+    
+    if (window_width < width) {
+        width = window_width;
+        auto scale = (double)window_width / (double)width;
+        height = (unsigned int)((double)height * scale);
+    }
+
+    if (window_height < height) {
+        height = window_height;
+        auto scale = (double)window_height / (double)height;
+        width = (unsigned int)((double)width * scale);
+    }
+
+    if (width != width_ || height != height_) {
+        boost::gil::rgb8_image_t new_mask_img(width, height);
+        boost::gil::resize_view(const_view(mask_img_), view(new_mask_img), 
+            boost::gil::bilinear_sampler());
+        mask_img_ = new_mask_img;
+        configure(mask_img_.width(), mask_img_.height());
+    }
+}
+
+void venation::prepare_mask() {
     mask_data_.clear();
-    mask_data_.reserve(img.width() * img.height());
+    mask_data_.reserve(mask_img_.width() * mask_img_.height());
 
     // convert the image to black and white
     boost::gil::for_each_pixel(
-        boost::gil::const_view(img), 
+        boost::gil::const_view(mask_img_), 
         img::BlackAndWhitePixelInserter(&mask_data_, mask_shades_)
     );
-
-    return *this;
 }
 
 /**
@@ -118,6 +147,12 @@ void venation::create_seeds() {
         // add the node to the node index vector.
         nodes_.push_back(node::create(seed));
     }
+}
+
+void venation::setup() {
+    prepare_mask();
+    generate_attractors();
+    create_seeds();
 }
 
 venation::vector2 normalize(const venation::vector2& p) {

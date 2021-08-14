@@ -36,9 +36,9 @@ int App::parse_options(int argc, const char* argv[]) {
         desc.add_options()
             ("help,h", "produce help message")
             ("width", po::value<unsigned int>(), 
-                "Simulation width in pixels. Defaults to 512.")
+                "Simulation width in pixels. Defaults to 512, overridden by mask.")
             ("height", po::value<unsigned int>(), 
-                "Simulation height in pixels. Defaults to 512.")
+                "Simulation height in pixels. Defaults to 512, overridden by mask.")
             ("num-attractors", po::value<unsigned int>(),
                 "Number of random attractors to generate. Defaults to 5000.")
             ("seeds", po::value<std::string>(),
@@ -248,9 +248,12 @@ int App::parse_options(int argc, const char* argv[]) {
     return EXIT_SUCCESS;
 }
 
+void App::scale_to_fit(int window_width, int window_height) {
+    venation_.scale_to_fit(window_width, window_height);
+}
+
 void App::setup() {
-    venation_.generate_attractors();
-    venation_.create_seeds();
+    venation_.setup();
 
     if (timeout_ > 0.0) {
         start_ = std::chrono::system_clock::now();
