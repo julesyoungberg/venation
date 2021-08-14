@@ -40,7 +40,7 @@ int main(int argc, const char* argv[]) {
     boost::gil::rgb8_image_t img;
     boost::gil::read_and_convert_image(filename, img, boost::gil::pnm_tag());
     
-    std::string outpath = parts[0] + ".png";
+    std::string outpath = parts[parts.size() - 2] + ".png";
     boost::gil::write_view(outpath, boost::gil::view(img), 
         boost::gil::png_tag());
     
