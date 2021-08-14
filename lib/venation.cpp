@@ -83,7 +83,8 @@ void venation::scale_to_fit(int window_width, int window_height) {
             boost::gil::bilinear_sampler());
         mask_img_ = new_mask_img;
         std::cout << "reconfiguring\n";
-        configure(mask_img_.width(), mask_img_.height());
+        configure(width, height);
+        std::cout << "done\n";
     }
 }
 
