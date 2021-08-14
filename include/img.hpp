@@ -5,7 +5,7 @@
 
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
-#include <boost/gil/extension/io/png.hpp>
+#include <boost/gil/extension/io/pnm.hpp>
 
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
@@ -58,6 +58,7 @@ namespace img {
         boost::gil::rgb8_image_t img(width, height);
         const boost::gil::rgb8_view_t& viewer = boost::gil::view(img);
         
+        
         // copy pixel data into boost image object
         for (int y = 0; y < viewer.height(); ++y) {
             boost::gil::rgb8_view_t::x_iterator row = viewer.row_begin(y);
@@ -71,7 +72,7 @@ namespace img {
         }
 
         boost::gil::write_view(filepath, boost::gil::view(img), 
-            boost::gil::png_tag());
+            boost::gil::pnm_tag());
 
         std::cout << "Output written to " << filepath << ".\n";
     }

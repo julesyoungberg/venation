@@ -3,14 +3,10 @@
 #include <iostream>
 #include <regex>
 
-#include <png.h>
-#include <jpeglib.h>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/gil/image.hpp>
 #include <boost/gil/typedefs.hpp>
-#include <boost/gil/extension/io/png.hpp>
-#include <boost/gil/extension/io/jpeg.hpp>
+#include <boost/gil/extension/io/pnm.hpp>
 #include <boost/program_options.hpp>
 #include <CGAL/squared_distance_2.h>
 
@@ -55,7 +51,7 @@ int App::parse_options(int argc, const char* argv[]) {
             ("timeout", po::value<unsigned int>(),
                 "A time limit in seconds after which the simulation result "
                 "will be saved to the output file and the program will "
-                "terminate. Defaults to never.")
+                "terminate. Defaults to 60 seconds.")
             ("growth-radius", po::value<long double>(),
                 "The maximum distance an attractor can be from a growth node "
                 "and still influence it (relative to normalized points). "
@@ -71,7 +67,7 @@ int App::parse_options(int argc, const char* argv[]) {
                 "The number of grayscale shades to quantize the mask down to. "
                 "Defaults to 2.")
             ("mask", po::value<std::string>(),
-                "A path to a png or jpeg image file that will be used to mask "
+                "A path to a pnm image file that will be used to mask "
                 "the attractors. i.e. generated attractors will only be kept "
                 "for the simulation if the corresponding pixel in the image "
                 "is bright enough. The file is converted to grayscale and "
@@ -80,7 +76,7 @@ int App::parse_options(int argc, const char* argv[]) {
                 "position will be kept.")
             ("outfile", po::value<std::string>(), 
                 "An image path to store the result at. The path must include "
-                "an extension and it must be png.");
+                "an extension and it must be pnm.");
 
         po::variables_map vm;
         po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -192,7 +188,7 @@ int App::parse_options(int argc, const char* argv[]) {
 
             if (parts.size() < 2) {
                 std::cerr << "Error: invalid mask file '" << mask_file
-                    << "', expected a path to a png or jpeg image file.\n";
+                    << "', expected a path to a pnm image file.\n";
                 return EXIT_FAILURE;
             }
 
@@ -202,13 +198,11 @@ int App::parse_options(int argc, const char* argv[]) {
             });
             const char* ext = extension.c_str();
 
-            if (strcmp(ext, "png") == 0) {
-                boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::png_tag());
-            } else if (strcmp(ext, "jpg") == 0 || strcmp(ext, "jpeg") == 0) {
-                boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::jpeg_tag());
+            if (strcmp(ext, "pnm") == 0) {
+                boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::pnm_tag());
             } else {
                 std::cerr << "Error: invalid mask file extension '" << extension 
-                    << "', expected png or jpeg.\n";
+                    << "', expected pnm.\n";
                 return EXIT_FAILURE;
             }
 
@@ -222,7 +216,7 @@ int App::parse_options(int argc, const char* argv[]) {
 
             if (parts.size() < 2) {
                 std::cerr << "Error invalid outfile '" << out_file
-                    << "', expected a path with a png extension.\n";
+                    << "', expected a path with a pnm extension.\n";
                 return EXIT_FAILURE;
             }
 
@@ -232,9 +226,9 @@ int App::parse_options(int argc, const char* argv[]) {
             });
             const char* ext = extension.c_str();
 
-            if (strcmp(ext, "png") != 0) {
+            if (strcmp(ext, "pnm") != 0) {
                 std::cerr << "Error: invalid outfile extension '" << extension 
-                    << "', expected png.\n";
+                    << "', expected pnm.\n";
                 return EXIT_FAILURE;
             }
 

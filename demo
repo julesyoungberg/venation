@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Print an error message and exit.
-panic()
-{
+panic() {
 	echo "ERROR: $@"
 	exit 1
 }
@@ -11,6 +10,7 @@ panic()
 cmd_dir=$(dirname "$0") || panic "cannot determine command directory"
 
 venation_program="$cmd_dir/venation"
+options="--mask masks/triangle_mask.pnm --outfile output.pnm"
 
 echo "Running venation program"
-$venation_program || panic "venation program failed"
+$venation_program $options || panic "venation program failed"
