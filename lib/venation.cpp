@@ -55,26 +55,34 @@ venation& venation::mask(const boost::gil::rgb8_image_t& img) {
 }
 
 void venation::scale_to_fit(int window_width, int window_height) {
+    std::cout << "scale_to_fit\n";
     auto width = width_;
     auto height = height_;
+    std::cout << "width: " << width << " height: " << height << '\n';
+    std::cout << "window_width: " << window_width 
+        << " window_height: " << window_height << '\n';
     
     if (window_width < width) {
+        std::cout << "scaling down width\n";
         width = window_width;
         auto scale = (double)window_width / (double)width;
         height = (unsigned int)((double)height * scale);
     }
 
     if (window_height < height) {
+        std::cout << "scaling down height\n";
         height = window_height;
         auto scale = (double)window_height / (double)height;
         width = (unsigned int)((double)width * scale);
     }
 
     if (width != width_ || height != height_) {
+        std::cout << "resizing\n";
         boost::gil::rgb8_image_t new_mask_img(width, height);
         boost::gil::resize_view(const_view(mask_img_), view(new_mask_img), 
             boost::gil::bilinear_sampler());
         mask_img_ = new_mask_img;
+        std::cout << "reconfiguring\n";
         configure(mask_img_.width(), mask_img_.height());
     }
 }
