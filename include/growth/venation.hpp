@@ -95,6 +95,7 @@ namespace growth {
             long double growth_rate_ = 0.002;
             long double consume_radius_ = 0.0005;
             unsigned int mask_shades_ = 2;
+            bool mask_given_ = false;
 
             boost::gil::rgb8_image_t mask_img_;
             std::vector<float> mask_data_;

@@ -49,46 +49,43 @@ venation& venation::mode(const std::string& mode) {
 
 venation& venation::mask(const boost::gil::rgb8_image_t& img) {
     mask_img_ = img;
+    mask_given_ = true;
     // Reconfigure. The input image's dimensions trump any configuration.
     configure(mask_img_.width(), mask_img_.height());
     return *this;
 }
 
 void venation::scale_to_fit(int window_width, int window_height) {
-    std::cout << "scale_to_fit\n";
     auto width = width_;
     auto height = height_;
-    std::cout << "width: " << width << " height: " << height << '\n';
-    std::cout << "window_width: " << window_width 
-        << " window_height: " << window_height << '\n';
     
     if (window_width < width) {
-        std::cout << "scaling down width\n";
         width = window_width;
         auto scale = (double)window_width / (double)width;
         height = (unsigned int)((double)height * scale);
     }
 
     if (window_height < height) {
-        std::cout << "scaling down height\n";
         height = window_height;
         auto scale = (double)window_height / (double)height;
         width = (unsigned int)((double)width * scale);
     }
 
     if (width != width_ || height != height_) {
-        std::cout << "resizing\n";
         boost::gil::rgb8_image_t new_mask_img(width, height);
         boost::gil::resize_view(const_view(mask_img_), view(new_mask_img), 
             boost::gil::bilinear_sampler());
         mask_img_ = new_mask_img;
-        std::cout << "reconfiguring\n";
         configure(width, height);
-        std::cout << "done\n";
     }
 }
 
 void venation::prepare_mask() {
+    if (!mask_given_) {
+        std::cout << "no mask\n";
+        return;
+    }
+
     mask_data_.clear();
     mask_data_.reserve(mask_img_.width() * mask_img_.height());
 
@@ -159,8 +156,11 @@ void venation::create_seeds() {
 }
 
 void venation::setup() {
+    std::cout << "preparing mask\n";
     prepare_mask();
+    std::cout << "generating attractors\n";
     generate_attractors();
+    std::cout << "creating seeds\n";
     create_seeds();
 }
 
