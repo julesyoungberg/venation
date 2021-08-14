@@ -11,8 +11,8 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(CGAL REQUIRED)
 find_package(Boost 1.75 REQUIRED COMPONENTS program_options)
-find_package(JPEG REQUIRED)
-find_package(PNG REQUIRED)
+#find_package(JPEG REQUIRED)
+#find_package(PNG REQUIRED)
 
 if (APPLE)
     find_package(glfw3 REQUIRED)
@@ -28,17 +28,17 @@ endif()
 # build growth library
 add_library(growth lib/node.cpp lib/venation.cpp)
 target_include_directories(growth PUBLIC include ${GLFW_INCLUDE_DIRS} 
-    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
-    ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
+    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+    #${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
 
 # build application
-add_executable(venation app/main.cpp app/venation.cpp)
+add_executable(venation app/main.cpp app/app.cpp)
 target_link_libraries(venation growth)
 target_include_directories(venation PUBLIC include ${GLFW_INCLUDE_DIRS} 
-    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR}
-    ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
+    ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+    #${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR})
 target_link_libraries(venation OpenGL::GL GLEW::GLEW ${GLFW_LIBRARIES} CGAL::CGAL
-    ${Boost_LIBRARIES} JPEG::JPEG PNG::PNG)
+    ${Boost_LIBRARIES})# JPEG::JPEG PNG::PNG)
 
 # Install the hello and goodbye programs.
 install(TARGETS venation DESTINATION bin)
