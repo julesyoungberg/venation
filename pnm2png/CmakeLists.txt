@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
+project(branching_growth LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_MODULE_PATH /)
+
+find_package(Boost 1.75 REQUIRED COMPONENTS program_options)
+find_package(PNG REQUIRED)
+
+add_executable(pnm2png main.cpp)
+target_include_directories(pnm2png PUBLIC ${Boost_INCLUDE_DIR}
+    ${PNG_INCLUDE_DIR})
+target_link_libraries(pnm2png ${Boost_LIBRARIES} PNG::PNG)
+
+install(TARGETS pnm2png DESTINATION bin)
