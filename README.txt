@@ -14,10 +14,12 @@ To build and install the software, use the commands:
 To run a demonstration, use the commands:
     $INSTALL_DIR/bin/demo
 
-Command Line Options:
+Options:
   -h [ --help ]         produce help message
-  --width arg           Simulation width in pixels. Defaults to 512.
-  --height arg          Simulation height in pixels. Defaults to 512.
+  --width arg           Simulation width in pixels. Defaults to 512, overridden
+                        by mask.
+  --height arg          Simulation height in pixels. Defaults to 512, 
+                        overridden by mask.
   --num-attractors arg  Number of random attractors to generate. Defaults to 
                         5000.
   --seeds arg           A list of 2D points to start growing from. Input should
@@ -41,9 +43,10 @@ Command Line Options:
   --mask arg            A path to a pnm image file that will be used to mask 
                         the attractors. i.e. generated attractors will only be 
                         kept for the simulation if the corresponding pixel in 
-                        the image is bright enough. The file is converted to 
-                        grayscale and quantized into `mask-shades` shades. The 
-                        grayscale value is then used as a probability that an 
-                        attractor at that position will be kept.
+                        the image is bright enough. Simple, black and white 
+                        images are best.The file is converted to grayscale and 
+                        quantized into `mask-shades` shades. The grayscale 
+                        value is then used as a probability that an attractor 
+                        at that position will be kept.
   --outfile arg         An image path to store the result at. The path must 
                         include an extension and it must be pnm.

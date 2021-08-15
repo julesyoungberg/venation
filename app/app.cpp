@@ -74,10 +74,10 @@ int App::parse_options(int argc, const char* argv[]) {
                 "A path to a pnm image file that will be used to mask "
                 "the attractors. i.e. generated attractors will only be kept "
                 "for the simulation if the corresponding pixel in the image "
-                "is bright enough. The file is converted to grayscale and "
-                "quantized into `mask-shades` shades. The grayscale value "
-                "is then used as a probability that an attractor at that "
-                "position will be kept.")
+                "is bright enough. Simple, black and white images are best."
+                "The file is converted to grayscale and quantized into "
+                "`mask-shades` shades. The grayscale value is then used as a "
+                "probability that an attractor at that position will be kept.")
             ("outfile", po::value<std::string>(), 
                 "An image path to store the result at. The path must include "
                 "an extension and it must be pnm.");
