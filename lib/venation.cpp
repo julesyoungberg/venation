@@ -105,6 +105,9 @@ void venation::generate_attractors() {
     std::vector<venation::point2> attractors;
 
     // generate random points
+    std::cout << "generating random attractors\n";
+    std::cout << "width: " << width_ << " height: " << height_ << '\n';
+    std::cout << "mask_data: " << mask_data_.size() << '\n';
     for (int i = 0; i < num_attractors_; ++i) {
         x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
         y = rnd() * 2.0 - 1.0;
