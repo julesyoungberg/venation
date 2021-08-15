@@ -16,19 +16,42 @@
 
 using namespace growth;
 
-// This class manages the execution of the venation simulation
-// and other openGL, input, and output related things.
+/*
+ * This class manages the execution of the venation simulation
+ * and other openGL, input, and output related things.
+ */
 class App {
     public:
         
+        // default constructor and destructor
         App() = default;
         ~App() = default;
 
-        // lifecycle
+        /**
+         * Parses the command line options.
+         */
         int parse_options(int argc, const char* argv[]);
+
+        /**
+         * Scales the simulation to fit within the given width and height.
+         */
         void scale_to_fit(int, int);
+
+        /**
+         * Initializes the simulation.
+         */
         void setup();
-        void update();        
+
+        /**
+         * Updates the simulation, equivalent to a single timestep, though a
+         * true time step is not present here. Instead, the speed is dependant
+         * on the framerate, which varies depending on the available resources.
+         */
+        void update();
+
+        /**
+         * Draws the state of the simulation
+         */
         void draw();
 
         // modifiers
@@ -44,6 +67,7 @@ class App {
         unsigned int height() { return venation_.height(); }
 
     private:
+
         void check_timeout();
 
         venation venation_;
@@ -55,4 +79,3 @@ class App {
         GLFWwindow* window_;
 
 };
-

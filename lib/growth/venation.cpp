@@ -17,6 +17,9 @@
 
 using namespace growth;
 
+/**
+ * Generates a random double between 0 and 1.
+ */
 double rnd() {
     return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 }
@@ -59,16 +62,19 @@ void venation::scale_to_fit(int window_width, int window_height) {
     auto width = width_;
     auto height = height_;
     
+    // scale based on width if needed
     if (window_width < width) {
         width = window_width;
         height = (unsigned int)((double)width / aspect_ratio_);
     }
 
+    // scale based on height if needed
     if (window_height < height) {
         height = window_height;
         width = (unsigned int)((double)height * aspect_ratio_);
     }
 
+    // if the size has changed reconfigure and resize image
     if (width != width_ || height != height_) {
         boost::gil::rgb8_image_t new_mask_img(width, height);
         boost::gil::resize_view(const_view(mask_img_), view(new_mask_img), 
@@ -78,6 +84,10 @@ void venation::scale_to_fit(int window_width, int window_height) {
     }
 }
 
+/**
+ * Converts the image to a vector representation for
+ * easy lookup during the simulation.
+ */
 void venation::prepare_mask() {
     if (!mask_given_) {
         return;
@@ -110,6 +120,8 @@ void venation::generate_attractors() {
         if (mask_data_.size() == 0) {
             attractors.push_back(p);
         } else {
+            // Keep the attractor based on the brightness of the
+            // mask's corresponding pixel as probability.
             int ix = (int)round((x * 0.5 + 0.5) * (float)width_);
             int iy = (int)round((y * 0.5 + 0.5) * (float)height_);
             float brightness = mask_data_[(height_ - iy) * width_ + ix];
@@ -391,19 +403,27 @@ void venation::draw_attractors() {
 }
 
 void venation::draw_nodes() {
+    // start at each seed
     for (unsigned i = 0; i < seeds_.size(); ++i) {
+        // initialize a stack of nodes
         std::vector<node_ref> to_visit;
         to_visit.push_back(nodes_[i]);
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glLineWidth(3.0f);
 
+        // while the stack is not empty
         while (to_visit.size() > 0) {
+            // pop from the stack
             auto node = to_visit.back();
             to_visit.pop_back();
 
+            // visit each of the node's children
             for (auto child : node->children) {
+                // push them to the stack
                 to_visit.push_back(child);
+
+                // draw a line from the parent to the child
                 glLineWidth(child->width * 3.0);
                 glBegin(GL_LINES);
                     glVertex2d(node->position.x() / aspect_ratio_, node->position.y());

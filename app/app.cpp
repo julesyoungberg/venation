@@ -18,6 +18,10 @@ namespace po = boost::program_options;
 
 using namespace growth;
 
+/**
+ * Erases all instances of a char from a string.
+ * Source: https://stackoverflow.com/questions/20326356/how-to-remove-all-the-occurrences-of-a-char-in-c-string
+ */
 void erase_all(std::string& str, char c) {
     if (str.find(c) != std::string::npos) {
         str.erase(std::remove(str.begin(), str.end(), c), str.end());
@@ -182,6 +186,7 @@ int App::parse_options(int argc, const char* argv[]) {
         }
 
         if (vm.count("mask")) {
+            // split the filename to check the extension
             std::string mask_file = vm["mask"].as<std::string>();
             std::vector<std::string> parts;
             boost::split(parts, mask_file, boost::is_any_of("."));
@@ -192,12 +197,14 @@ int App::parse_options(int argc, const char* argv[]) {
                 return EXIT_FAILURE;
             }
 
+            // get the lowercase extension
             std::string extension = parts[parts.size() - 1];
             std::for_each(extension.begin(), extension.end(), [](char & c){
                 c = ::tolower(c);
             });
             const char* ext = extension.c_str();
 
+            // read input file if valid
             if (strcmp(ext, "pnm") == 0) {
                 boost::gil::read_and_convert_image(mask_file, mask_img, boost::gil::pnm_tag());
             } else {
@@ -210,6 +217,7 @@ int App::parse_options(int argc, const char* argv[]) {
         }
 
         if (vm.count("outfile")) {
+            // split the filename to check the extension
             std::string out_file = vm["outfile"].as<std::string>();
             std::vector<std::string> parts;
             boost::split(parts, out_file, boost::is_any_of("."));
@@ -220,12 +228,14 @@ int App::parse_options(int argc, const char* argv[]) {
                 return EXIT_FAILURE;
             }
 
+            // get the lowercase extension
             std::string extension = parts[parts.size() - 1];
             std::for_each(extension.begin(), extension.end(), [](char & c){
                 c = ::tolower(c);
             });
             const char* ext = extension.c_str();
 
+            // validate extension
             if (strcmp(ext, "pnm") != 0) {
                 std::cerr << "Error: invalid outfile extension '" << extension 
                     << "', expected pnm.\n";
@@ -265,6 +275,7 @@ void App::check_timeout() {
         return;
     }
 
+    // get current elapsed running time
     auto now = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = now - start_;
     double running_time = diff.count();

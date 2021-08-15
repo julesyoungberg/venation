@@ -14,11 +14,15 @@
 
 namespace growth {
 
-    // A class simulating venation growth using a space colonization algorithm.
-    // It supports both open and closed venation styles, and has a number
-    // of configurable parameters.
+    /*
+     * A class simulating venation growth using a space colonization algorithm.
+     * It supports both open and closed venation styles, and has a number
+     * of configurable parameters.
+     */
     class venation {
         public:
+
+            // types from CGAL used for math
             using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
             using vertex_index = CGAL::Triangulation_vertex_base_with_info_2<
                 unsigned int,
@@ -38,20 +42,47 @@ namespace growth {
             using node_handle = delaunay_indexed::Vertex_handle;
             using node_circulator = delaunay_indexed::Vertex_circulator;
 
+            // the types of venation
             enum type { open, closed };
 
+            // trivial constructor and destructor
             venation(type mode = type::open): mode_(mode) {}
             ~venation() = default;
 
-            // lifecycle
-            void scale_to_fit(int, int);
+            /**
+             * Scales the simulation to fit within the provided with & height.
+             * If a mask is given, it will also be scaled down.
+             * Must be called before setup().
+             */
+            void scale_to_fit(int window_width, int window_height);
+
+            /**
+             * Initializes the simulation's state by sampling the mask if present,
+             * then generating the attractors as well as the seeds.
+             */
             void setup();
+
+            /**
+             * Updates the simulation, equivalent to a single timestep.
+             */
             void update();
+
+            /**
+             * Draw the attractors to the screen. Useful for debugging.
+             */
             void draw_attractors();
+
+            /**
+             * Draw the growth nodes to the screen.
+             */
             void draw_nodes();
 
-            // setters
+            /**
+             * Sets the width and height of the simulation.
+             */
             venation& configure(unsigned int width, unsigned int height);
+
+            // setters
             venation& seeds(const std::vector<point2>& seeds);
             venation& num_attractors(unsigned int n) { num_attractors_ = n; return *this; }
             venation& mode(type mode) { mode_ = mode; return *this; }
@@ -69,6 +100,7 @@ namespace growth {
             unsigned int height() { return height_; }
 
         private:
+
             void prepare_mask();
             void generate_attractors();
             void create_seeds();

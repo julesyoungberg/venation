@@ -34,19 +34,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 int main(int argc, const char* argv[]) {
     // parse command line options and configure
+    std::cout << "parsing options\n";
     int r = app.parse_options(argc, argv);
     if (r != EXIT_SUCCESS) {
         return r;
     }
 
     // initialize openGL app
+    std::cout << "initializing\n";
     if (!glfwInit()) { return EXIT_FAILURE; }
     glfwSwapInterval(1);
 
+    std::cout << "scaling to fit\n";
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     app.scale_to_fit(mode->width, mode->height);
 
     // create window
+    std::cout << "creating window\n";
     GLFWwindow* window = glfwCreateWindow(app.width(), app.height(), argv[0], 
         nullptr, nullptr);
     if (!window) {
@@ -58,10 +62,12 @@ int main(int argc, const char* argv[]) {
     glfwSetKeyCallback(window, key_callback);
 
     // setup app
+    std::cout << "setting up simulation\n";
     app.window(window);
     app.setup();
     
     // animate
+    std::cout << "animating\n";
     while (!glfwWindowShouldClose(window)) {
         app.update();
         glfwMakeContextCurrent(window);

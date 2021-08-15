@@ -4,3 +4,4 @@ dist
 build
 tmp_cmake
 report.pdf
+bin
