@@ -20,8 +20,9 @@ namespace growth {
         using vector2 = kernel::Vector_2;
 
         // trivial constructor and destructor
-        node(const point2& p, double base_width = 0.1)
-            : position(p), base_width(base_width), width(base_width) {}
+        node(const point2& p, const vector2& d, double base_width = 0.3)
+            : position(p), direction(d), base_width(base_width), 
+            width(base_width) {}
 
         ~node() = default;
 
@@ -39,14 +40,15 @@ namespace growth {
         double update_width();
 
         /**
-         * Creates a node at the given point.
+         * Creates a node at the given point and direction.
          * Returns a smart pointer that references it.
          */
-        static node_ref create(const point2& p);
+        static node_ref create(const point2& p, const vector2& d);
 
         // data members
         std::vector<node_ref> children;
         point2 position;
+        vector2 direction;
         double width;
         double base_width;
 

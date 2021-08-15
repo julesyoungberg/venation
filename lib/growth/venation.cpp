@@ -17,13 +17,6 @@
 
 using namespace growth;
 
-/**
- * Generates a random double between 0 and 1.
- */
-double rnd() {
-    return static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
-}
-
 venation& venation::configure(unsigned int width, unsigned int height) {
     width_ = width;
     height_ = height;
@@ -113,8 +106,8 @@ void venation::generate_attractors() {
 
     // generate random points
     for (int i = 0; i < num_attractors_; ++i) {
-        x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
-        y = rnd() * 2.0 - 1.0;
+        x = (util::rnd() * 2.0 - 1.0) * aspect_ratio_;
+        y = util::rnd() * 2.0 - 1.0;
         venation::point2 p(x, y);
 
         if (mask_data_.size() == 0) {
@@ -125,7 +118,7 @@ void venation::generate_attractors() {
             int ix = (int)round((x * 0.5 + 0.5) * (float)width_);
             int iy = (int)round((y * 0.5 + 0.5) * (float)height_);
             float brightness = mask_data_[(height_ - iy) * width_ + ix];
-            if (rnd() < brightness) {
+            if (util::rnd() < brightness) {
                 attractors.push_back(p);
             }
         }
@@ -160,7 +153,8 @@ void venation::create_seeds() {
         // insert node to dilaunay graph
         insert_node(seed);
         // add the node to the node index vector.
-        nodes_.push_back(node::create(seed));
+        auto dir = util::normalize(venation::vector2(util::rnd(), util::rnd()));
+        nodes_.push_back(node::create(seed, dir));
     }
 }
 
@@ -195,28 +189,71 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
         return;
     }
 
-    no_growth_count_ = std::max(0, no_growth_count_ - 1);
+    bool has_grown = false;
     
     std::vector<std::pair<venation::point2, unsigned int>> new_points;
     
     for (const auto& i : influences) {
+        node_ref parent = nodes_[i.first];
+
         // 3. util::normalize each vector sum
-        auto d = util::normalize(i.second);
+        auto d = i.second;
+        // std::cout << "influence sum: " << d << '\n';
+        // auto l = util::length(d);
+        // std::cout << "influence sum length: " << l << '\n';
+        // std::cout << "parent direction: " << parent->direction << '\n';
+
+        d = util::normalize(d);
+        auto diff = parent->direction - d * -1.0;
+        // std::cout << "normalized dir: " << d << '\n';
+        // std::cout << "dirr from parent: " << diff << '\n';
+
+        // if the growth direction is the inverse of the previous growth
+        // direction we must just continue on, we cannot grow backwards
+        if (std::abs(diff.x()) < 0.01 && std::abs(diff.y()) < 0.01) {
+            // std::cout << "using parent dir\n";
+            d = parent->direction;
+        }
+
+        // std::cout << "growth dir: " << d << '\n';
 
         // 4. add new node
-        node_ref parent = nodes_[i.first];
-        venation::vector2 step = d * growth_rate();
-        venation::point2 child_pos = point2(
+        auto step = d * growth_rate();
+        venation::point2 child_pos(
             parent->position.x() + step.x(),
             parent->position.y() + step.y()
         );
-        node_ref child_node = node::create(child_pos);
+        // std::cout << "parent position: " << parent->position << '\n';
+        // std::cout << "child position: " << child_pos << '\n';
+
+        // check if node already exists
+        bool exists = false;
+        for (const auto& c : parent->children) {
+            if (c->position == child_pos) {
+                exists = true;
+                break;
+            }
+        }
+
+        if (exists) {
+            continue;
+        }
+
+        // node does not exist, add it to grow the structure
+        auto dir = util::normalize(child_pos - parent->position);
+        auto child_node = node::create(child_pos, dir);
         new_points.push_back(std::make_pair(child_pos, nodes_.size()));
         parent->children.push_back(child_node);
         nodes_.push_back(child_node);
+        has_grown = true;
     }
 
-    nodes_graph_.insert(new_points.begin(), new_points.end());
+    if (has_grown) {
+        no_growth_count_ = std::max(0, no_growth_count_ - 1);
+        nodes_graph_.insert(new_points.begin(), new_points.end());
+    } else {
+        ++no_growth_count_;
+    }
 }
 
 /**
@@ -258,10 +295,10 @@ void venation::open_step() {
         auto index = vertex->info();
         auto dist = util::distance(attractor, point);
 
-        if (dist > 0.0 && dist < growth_radius()) {
+        if (dist > consume_radius_ * 0.01 && dist < growth_radius()) {
             influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
-            venation::vector2 d = util::normalize(attractor - point);
+            venation::vector2 d = util::normalize(attractor - point) / dist;
             auto l = influences.find(index);
             if (l == influences.end()) {
                 influences[index] = d;
@@ -346,10 +383,10 @@ void venation::closed_step() {
                 continue;
             }
 
-            if (v_s > 0.0 && v_s < growth_radius()) {
+            if (v_s > consume_radius_ * 0.01 && v_s < growth_radius()) {
                 // 2. sum the difference vectors for each node
                 influenced_node_ids.push_back(v_handle->info());
-                venation::vector2 d = util::normalize(s - v);
+                venation::vector2 d = util::normalize(s - v) / v_s;
                 auto id = v_handle->info();
                 auto l = influences.find(id);
                 if (l == influences.end()) {

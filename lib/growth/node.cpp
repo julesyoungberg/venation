@@ -59,6 +59,6 @@ double growth::node::update_width() {
     return width;
 }
 
-growth::node_ref growth::node::create(const growth::node::point2& p) {
-    return std::make_shared<growth::node>(p);
+growth::node_ref growth::node::create(const growth::node::point2& p, const growth::node::vector2& d) {
+    return std::make_shared<growth::node>(p, d);
 }
