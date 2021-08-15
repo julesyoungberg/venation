@@ -164,6 +164,22 @@ void venation::create_seeds() {
     }
 }
 
+/**
+ * Returns the current growth radius as the base growth radius
+ * multiplied by the 2 to the no grwoth count.
+ */
+long double venation::growth_radius() {
+    return growth_radius_ * pow(2.0, no_growth_count_);
+}
+
+/**
+ * Returns the current growth rate as the base growth rate
+ * multiplied by the 2 to the no grwoth count.
+ */
+long double venation::growth_rate() {
+    return growth_rate_ * pow(2.0, no_growth_count_);
+}
+
 void venation::setup() {
     prepare_mask();
     generate_attractors();
@@ -183,6 +199,13 @@ venation::kernel::FT distance(const venation::point2& a,
  * Performs the node growth (colonization) step of the algorithm.
  */
 void venation::grow(const std::map<unsigned int, venation::vector2>& influences) {
+    if (influences.size() == 0) {
+        ++no_growth_count_;
+        return;
+    }
+
+    no_growth_count_ = 0;
+    
     std::vector<std::pair<venation::point2, unsigned int>> new_points;
     
     for (const auto& i : influences) {
@@ -191,7 +214,7 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
 
         // 4. add new node
         node_ref parent = nodes_[i.first];
-        venation::vector2 step = d * growth_rate_;
+        venation::vector2 step = d * growth_rate();
         venation::point2 child_pos = point2(
             parent->position.x() + step.x(),
             parent->position.y() + step.y()
@@ -244,7 +267,7 @@ void venation::open_step() {
         auto index = vertex->info();
         auto dist = distance(attractor, point);
 
-        if (dist > 0.0 && dist < growth_radius_) {
+        if (dist > 0.0 && dist < growth_radius()) {
             influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
             venation::vector2 d = normalize(attractor - point);
@@ -332,7 +355,7 @@ void venation::closed_step() {
                 continue;
             }
 
-            if (v_s > 0.0 && v_s < growth_radius_) {
+            if (v_s > 0.0 && v_s < growth_radius()) {
                 // 2. sum the difference vectors for each node
                 influenced_node_ids.push_back(v_handle->info());
                 venation::vector2 d = normalize(s - v);

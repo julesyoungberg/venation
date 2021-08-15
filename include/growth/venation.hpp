@@ -104,6 +104,9 @@ namespace growth {
             void prepare_mask();
             void generate_attractors();
             void create_seeds();
+            
+            long double growth_radius();
+            long double growth_rate();
 
             std::ptrdiff_t insert_node(const point2&);
             void grow(const std::map<unsigned int, vector2>&);
@@ -128,6 +131,7 @@ namespace growth {
             long double consume_radius_ = 0.0005;
             unsigned int mask_shades_ = 2;
             bool mask_given_ = false;
+            int no_growth_count_ = 0;
 
             boost::gil::rgb8_image_t mask_img_;
             std::vector<float> mask_data_;
