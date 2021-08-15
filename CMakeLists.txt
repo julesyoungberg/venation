@@ -23,7 +23,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
 endif()
 
 # build growth library
-add_library(growth lib/node.cpp lib/venation.cpp)
+add_library(growth lib/growth/node.cpp lib/growth/venation.cpp)
 target_include_directories(growth PUBLIC include ${GLFW_INCLUDE_DIRS} 
     ${OPENGL_INCLUDE_DIR} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
