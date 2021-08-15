@@ -13,4 +13,4 @@ venation_program="$cmd_dir/venation"
 options="--mask masks/triangle_mask.pnm --outfile output.pnm"
 
 echo "Running venation program"
-$venation_program $options || panic "venation program failed"
+$venation_program || panic "venation program failed"
