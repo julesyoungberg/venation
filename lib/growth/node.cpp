@@ -1,6 +1,40 @@
 #include <cmath>
 
 #include "growth/node.hpp"
+#include "util.hpp"
+
+std::vector<growth::node_ref> growth::node::optimize() {
+    std::vector<growth::node_ref> removed;
+
+    if (children.size() == 0) {
+        // if there are no children no optimization needed
+        return removed;
+    }
+
+    // for each child, remove any nodes with a single child
+    for (int i = 0; i < children.size(); ++i) {
+        auto& child = children[i];
+        auto direction = util::normalize(child->position - position);
+        auto& current = child;
+
+        // step through the children as long as it is a straight line.
+        while (current->children.size() == 1) {
+            auto& next = current->children[0];
+            auto next_direction = util::normalize(next->position - position);
+
+            if (next_direction != direction) {
+                break;
+            }
+
+            removed.push_back(current);
+            current = next;
+        }
+
+        children[i] = current;
+    }
+
+    return removed;
+}
 
 /**
  * Update width by traversing the tree and computing the width

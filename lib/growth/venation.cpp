@@ -4,7 +4,6 @@
 
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
-#include <CGAL/squared_distance_2.h>
 
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
@@ -14,6 +13,7 @@
 
 #include "growth/venation.hpp"
 #include "img.hpp"
+#include "util.hpp"
 
 using namespace growth;
 
@@ -186,15 +186,6 @@ void venation::setup() {
     create_seeds();
 }
 
-venation::vector2 normalize(const venation::vector2& p) {
-    return p / std::sqrt(p.squared_length());
-}
-
-venation::kernel::FT distance(const venation::point2& a, 
-        const venation::point2& b) {
-    return std::sqrt(CGAL::squared_distance(a, b));
-}
-
 /**
  * Performs the node growth (colonization) step of the algorithm.
  */
@@ -209,8 +200,8 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
     std::vector<std::pair<venation::point2, unsigned int>> new_points;
     
     for (const auto& i : influences) {
-        // 3. normalize each vector sum
-        auto d = normalize(i.second);
+        // 3. util::normalize each vector sum
+        auto d = util::normalize(i.second);
 
         // 4. add new node
         node_ref parent = nodes_[i.first];
@@ -235,14 +226,14 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
 bool venation::has_consumed(unsigned int node_id, const venation::point2& s) {
     node_ref node = nodes_[node_id];
 
-    // check if the node is within kill distance
-    if (distance(node->position, s) < consume_radius_) {
+    // check if the node is within kill util::distance
+    if (util::distance(node->position, s) < consume_radius_) {
         return true;
     }
 
-    // otherwise, check if any childen are within kill distance
+    // otherwise, check if any childen are within kill util::distance
     for (const auto& child : node->children) {
-        if (distance(s, child->position) < consume_radius_) {
+        if (util::distance(s, child->position) < consume_radius_) {
             return true;
         }
     }
@@ -265,12 +256,12 @@ void venation::open_step() {
         auto vertex = nodes_graph_.nearest_vertex(attractor);
         auto point = vertex->point();
         auto index = vertex->info();
-        auto dist = distance(attractor, point);
+        auto dist = util::distance(attractor, point);
 
         if (dist > 0.0 && dist < growth_radius()) {
             influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
-            venation::vector2 d = normalize(attractor - point);
+            venation::vector2 d = util::normalize(attractor - point);
             auto l = influences.find(index);
             if (l == influences.end()) {
                 influences[index] = d;
@@ -286,7 +277,7 @@ void venation::open_step() {
     // 5. remove attractors that have been consumed
     for (const auto& a : influencing_attractors) {
         auto vertex = nodes_graph_.nearest_vertex(a->point());
-        auto dst = distance(a->point(), vertex->point());
+        auto dst = util::distance(a->point(), vertex->point());
 
         if (dst < 0.001) {
             attractors_graph_.remove(a);
@@ -331,7 +322,7 @@ void venation::closed_step() {
         std::vector<unsigned int> influenced_node_ids;
         for (const auto& v_handle : adjacent) {
             auto v = v_handle->point();
-            auto v_s = distance(v, s);
+            auto v_s = util::distance(v, s);
             bool valid = true;
             
             // point v is in the relative neighborhood if
@@ -342,8 +333,8 @@ void venation::closed_step() {
                     continue;
                 }
 
-                auto u_s = distance(u, s);
-                auto v_u = distance(v, u);
+                auto u_s = util::distance(u, s);
+                auto v_u = util::distance(v, u);
                 
                 if (v_s >= std::max(u_s, v_u)) {
                     valid = false;
@@ -358,7 +349,7 @@ void venation::closed_step() {
             if (v_s > 0.0 && v_s < growth_radius()) {
                 // 2. sum the difference vectors for each node
                 influenced_node_ids.push_back(v_handle->info());
-                venation::vector2 d = normalize(s - v);
+                venation::vector2 d = util::normalize(s - v);
                 auto id = v_handle->info();
                 auto l = influences.find(id);
                 if (l == influences.end()) {
@@ -409,6 +400,18 @@ void venation::update() {
     }
 
     for (unsigned i = 0; i < seeds_.size(); ++i) {
+        std::vector<node_ref> removed = nodes_[i]->optimize();
+        
+        // remove pruned nodes from node graph
+        for (const auto& n : removed) {
+            auto vertex = nodes_graph_.nearest_vertex(n->position);
+            auto point = vertex->point();
+
+            if (point == n->position) {
+                nodes_graph_.remove(vertex);
+            }
+        }
+
         nodes_[i]->update_width();
     }
 }

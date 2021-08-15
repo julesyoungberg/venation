@@ -17,12 +17,19 @@ namespace growth {
         // types from CGAL for representing the points with robust numerical predicates.
         using kernel = CGAL::Exact_predicates_inexact_constructions_kernel;
         using point2 = kernel::Point_2;
+        using vector2 = kernel::Vector_2;
 
         // trivial constructor and destructor
         node(const point2& p, double base_width = 0.1)
             : position(p), base_width(base_width), width(base_width) {}
 
         ~node() = default;
+
+        /**
+         * Optimizes the node tree by removing nodes with one parent.
+         * Returns a vector of nodes that have been deleted from the tree.
+         */
+        std::vector<node_ref> optimize();
 
         /**
          * Computes the width the structure should be at the node's point
