@@ -253,7 +253,6 @@ void App::scale_to_fit(int window_width, int window_height) {
 }
 
 void App::setup() {
-    std::cout << "app::setup\n";
     venation_.setup();
 
     if (timeout_ > 0.0) {

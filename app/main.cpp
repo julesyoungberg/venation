@@ -40,7 +40,6 @@ int main(int argc, const char* argv[]) {
     }
 
     // initialize openGL app
-    std::cout << "initializing\n";
     if (!glfwInit()) { return EXIT_FAILURE; }
     glfwSwapInterval(1);
 
@@ -48,7 +47,6 @@ int main(int argc, const char* argv[]) {
     app.scale_to_fit(mode->width, mode->height);
 
     // create window
-    std::cout << "creating window\n";
     GLFWwindow* window = glfwCreateWindow(app.width(), app.height(), argv[0], 
         nullptr, nullptr);
     if (!window) {
@@ -60,12 +58,10 @@ int main(int argc, const char* argv[]) {
     glfwSetKeyCallback(window, key_callback);
 
     // setup app
-    std::cout << "setup\n";
     app.window(window);
     app.setup();
     
     // animate
-    std::cout << "animate\n";
     while (!glfwWindowShouldClose(window)) {
         app.update();
         glfwMakeContextCurrent(window);

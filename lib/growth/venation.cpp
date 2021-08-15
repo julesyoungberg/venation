@@ -58,7 +58,6 @@ venation& venation::mask(const boost::gil::rgb8_image_t& img) {
 void venation::scale_to_fit(int window_width, int window_height) {
     auto width = width_;
     auto height = height_;
-    std::cout << "width: " << width << " height: " << height << '\n';
     
     if (window_width < width) {
         width = window_width;
@@ -81,7 +80,6 @@ void venation::scale_to_fit(int window_width, int window_height) {
 
 void venation::prepare_mask() {
     if (!mask_given_) {
-        std::cout << "no mask\n";
         return;
     }
 
@@ -104,9 +102,6 @@ void venation::generate_attractors() {
     std::vector<venation::point2> attractors;
 
     // generate random points
-    std::cout << "generating random attractors\n";
-    std::cout << "width: " << width_ << " height: " << height_ << '\n';
-    std::cout << "mask_data: " << mask_data_.size() << '\n';
     for (int i = 0; i < num_attractors_; ++i) {
         x = (rnd() * 2.0 - 1.0) * aspect_ratio_;
         y = rnd() * 2.0 - 1.0;
@@ -158,11 +153,8 @@ void venation::create_seeds() {
 }
 
 void venation::setup() {
-    std::cout << "preparing mask\n";
     prepare_mask();
-    std::cout << "generating attractors\n";
     generate_attractors();
-    std::cout << "creating seeds\n";
     create_seeds();
 }
 

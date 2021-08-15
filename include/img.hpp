@@ -58,7 +58,7 @@ namespace img {
         boost::gil::rgb8_image_t img(width, height);
         const boost::gil::rgb8_view_t& viewer = boost::gil::view(img);
         
-        
+
         // copy pixel data into boost image object
         for (int y = 0; y < viewer.height(); ++y) {
             boost::gil::rgb8_view_t::x_iterator row = viewer.row_begin(y);
@@ -74,7 +74,7 @@ namespace img {
         boost::gil::write_view(filepath, boost::gil::view(img), 
             boost::gil::pnm_tag());
 
-        std::cout << "Output written to " << filepath << ".\n";
+        std::cout << "Output written to " << filepath << '\n';
     }
 
 }
