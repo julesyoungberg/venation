@@ -62,14 +62,12 @@ void venation::scale_to_fit(int window_width, int window_height) {
     
     if (window_width < width) {
         width = window_width;
-        auto scale = (double)window_width / (double)width;
-        height = (unsigned int)((double)height * scale);
+        height = (unsigned int)((double)width / aspect_ratio_);
     }
 
     if (window_height < height) {
         height = window_height;
-        auto scale = (double)window_height / (double)height;
-        width = (unsigned int)((double)width * scale);
+        width = (unsigned int)((double)height * aspect_ratio_);
     }
 
     if (width != width_ || height != height_) {
