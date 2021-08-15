@@ -58,6 +58,7 @@ venation& venation::mask(const boost::gil::rgb8_image_t& img) {
 void venation::scale_to_fit(int window_width, int window_height) {
     auto width = width_;
     auto height = height_;
+    std::cout << "width: " << width << " height: " << height << '\n';
     
     if (window_width < width) {
         width = window_width;
