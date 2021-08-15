@@ -204,7 +204,7 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
         return;
     }
 
-    no_growth_count_ = 0;
+    no_growth_count_ = std::max(0, no_growth_count_ - 1);
     
     std::vector<std::pair<venation::point2, unsigned int>> new_points;
     
