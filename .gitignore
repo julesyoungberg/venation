@@ -3,3 +3,4 @@ dist
 *.spv
 build
 tmp_cmake
+report.pdf
