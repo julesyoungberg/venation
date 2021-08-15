@@ -197,25 +197,14 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
         node_ref parent = nodes_[i.first];
 
         // 3. util::normalize each vector sum
-        auto d = i.second;
-        // std::cout << "influence sum: " << d << '\n';
-        // auto l = util::length(d);
-        // std::cout << "influence sum length: " << l << '\n';
-        // std::cout << "parent direction: " << parent->direction << '\n';
-
-        d = util::normalize(d);
+        auto d = util::normalize(i.second);
         auto diff = parent->direction - d * -1.0;
-        // std::cout << "normalized dir: " << d << '\n';
-        // std::cout << "dirr from parent: " << diff << '\n';
 
         // if the growth direction is the inverse of the previous growth
         // direction we must just continue on, we cannot grow backwards
         if (std::abs(diff.x()) < 0.01 && std::abs(diff.y()) < 0.01) {
-            // std::cout << "using parent dir\n";
             d = parent->direction;
         }
-
-        // std::cout << "growth dir: " << d << '\n';
 
         // 4. add new node
         auto step = d * growth_rate();
@@ -223,8 +212,6 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
             parent->position.x() + step.x(),
             parent->position.y() + step.y()
         );
-        // std::cout << "parent position: " << parent->position << '\n';
-        // std::cout << "child position: " << child_pos << '\n';
 
         // check if node already exists
         bool exists = false;
@@ -424,7 +411,29 @@ void venation::closed_step() {
 
         // if consumed, remove the attractor
         if (consumed) {
-            attractors_graph_.remove(pair.first);    
+            attractors_graph_.remove(pair.first);  
+
+            // connect the two influenced nodes
+            if (pair.second.size() == 2) {
+                auto& first = nodes_[pair.second[0]];
+                auto& second = nodes_[pair.second[1]];
+
+                if (first->children.size() > 0) {
+                    auto& last_child = first->children[first->children.size() - 1];
+                    auto dir = util::normalize(second->position - last_child->position);
+                    auto child_node = node::create(second->position, dir);
+                    last_child->children.push_back(child_node);
+                } else if (second->children.size() > 0) {
+                    auto& last_child = second->children[second->children.size() - 1];
+                    auto dir = util::normalize(first->position - last_child->position);
+                    auto child_node = node::create(first->position, dir);
+                    last_child->children.push_back(child_node);
+                } else {
+                    auto dir = util::normalize(second->position - first->position);
+                    auto child_node = node::create(second->position, dir);
+                    first->children.push_back(child_node);
+                }
+            }  
         }
     }
 }    

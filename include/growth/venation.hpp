@@ -126,7 +126,7 @@ namespace growth {
             unsigned int height_ = 512;
             long double aspect_ratio_ = 1.0;
             unsigned int num_attractors_ = 1000;
-            long double growth_radius_ = 0.1;
+            long double growth_radius_ = 0.5;
             long double growth_rate_ = 0.002;
             long double consume_radius_ = 0.002;
             unsigned int mask_shades_ = 2;
