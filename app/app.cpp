@@ -44,11 +44,11 @@ int App::parse_options(int argc, const char* argv[]) {
             ("height", po::value<unsigned int>(), 
                 "Simulation height in pixels. Defaults to 512, overridden by mask.")
             ("num-attractors", po::value<unsigned int>(),
-                "Number of random attractors to generate. Defaults to 5000.")
+                "Number of random attractors to generate. Defaults to 1000.")
             ("seeds", po::value<std::string>(),
                 "A list of 2D points to start growing from. Input should be of "
                 "the form \"(x1,y2),...,(xn,yn)\" where each x and y is in "
-                "the interval [-1, 1]. Defaults to (0,0).")
+                "the interval [-1, 1]. Defaults to \"(0,0)\".")
             ("mode", po::value<std::string>(),
                 "Growth mode, 'open' or 'closed' venation styles. "
                 "Defaults to 'open'.")
@@ -59,14 +59,14 @@ int App::parse_options(int argc, const char* argv[]) {
             ("growth-radius", po::value<long double>(),
                 "The maximum distance an attractor can be from a growth node "
                 "and still influence it (relative to normalized points). "
-                "Defaults to 0.1.")
+                "Defaults to 0.5.")
             ("growth-rate", po::value<long double>(),
                 "The size of the step taken at each growth step (relative to "
                 "normalized points). Defaults to 0.002.")
             ("consume-radius", po::value<long double>(),
                 "The distance between an attractor and node at which point "
                 "the attractor is considered consumed and removed "
-                "(relative to normalized points). Defaults to 0.0005.")
+                "(relative to normalized points). Defaults to 0.002.")
             ("mask-shades", po::value<unsigned int>(),
                 "The number of grayscale shades to quantize the mask down to. "
                 "Defaults to 2.")
@@ -282,15 +282,11 @@ void App::check_timeout() {
     double timeout = (double)timeout_;
 
     if (running_time >= (double)timeout_) {
-        // if an out file was provided,
-        // write to it and exit
         if (!out_file_.empty()) {
             img::save_frame(out_file_, window_);
-            exit(EXIT_SUCCESS);
-        } else {
-            // otherwise stop the simulation
-            running_ = false;
         }
+
+        exit(EXIT_SUCCESS);
     }
 }
 
