@@ -213,6 +213,11 @@ void venation::grow(const std::map<unsigned int, venation::vector2>& influences)
             parent->position.y() + step.y()
         );
 
+        auto growth_amount = util::distance(child_pos, parent->position);
+        if (growth_amount > growth_rate_ * 2.0) {
+            continue;
+        }
+
         // check if node already exists
         bool exists = false;
         for (const auto& c : parent->children) {
@@ -285,7 +290,8 @@ void venation::open_step() {
         if (dist > consume_radius_ * 0.01 && dist < growth_radius()) {
             influencing_attractors.push_back(it);
             // 2. sum the difference vectors for each node
-            venation::vector2 d = util::normalize(attractor - point) / dist;
+            auto weight = std::max(consume_radius_, (long double)dist);
+            venation::vector2 d = util::normalize(attractor - point) / weight;
             auto l = influences.find(index);
             if (l == influences.end()) {
                 influences[index] = d;
@@ -373,7 +379,8 @@ void venation::closed_step() {
             if (v_s > consume_radius_ * 0.01 && v_s < growth_radius()) {
                 // 2. sum the difference vectors for each node
                 influenced_node_ids.push_back(v_handle->info());
-                venation::vector2 d = util::normalize(s - v) / v_s;
+                auto weight = std::max(consume_radius_, (long double)v_s);
+                venation::vector2 d = util::normalize(s - v) / weight;
                 auto id = v_handle->info();
                 auto l = influences.find(id);
                 if (l == influences.end()) {

@@ -10,7 +10,5 @@ panic() {
 cmd_dir=$(dirname "$0") || panic "cannot determine command directory"
 
 venation_program="$cmd_dir/venation"
-options="--mask masks/triangle_mask.pnm --outfile output.pnm"
-
 echo "Running venation program"
-$venation_program
+$venation_program || panic "Failed to run venation program"
