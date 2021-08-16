@@ -14,6 +14,9 @@ There are two different versions of the algorithm which create different structu
 There’s open, where there are no loops, this is good for tree generation. 
 Then there’s closed, where loops are desired, and this produces patterns like leaf veins.
 
+During the simulation, it can be paused with the 'P' key. Additionally, the attractors 
+can be toggled with the 'A' key.
+
 Let $TOP_DIR denote the directory containing this README file.
 Let $INSTALL_DIR denote the directory into which this
 software is to be installed.
