@@ -54,8 +54,8 @@ int App::parse_options(int argc, const char* argv[]) {
                 "Defaults to 'open'.")
             ("timeout", po::value<unsigned int>(),
                 "A time limit in seconds after which the simulation result "
-                "will be saved to the output file and the program will "
-                "terminate. Defaults to 60 seconds.")
+                "will be saved to the output file, if present, and the program "
+                "will terminate. Defaults to 60 seconds.")
             ("growth-radius", po::value<long double>(),
                 "The maximum distance an attractor can be from a growth node "
                 "and still influence it (relative to normalized points). "

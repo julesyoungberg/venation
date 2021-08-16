@@ -17,6 +17,10 @@ In closed, loops are desired, and this produces patterns like leaf veins.
 During the simulation, it can be paused with the 'P' key. Additionally, the attractors 
 can be toggled with the 'A' key.
 
+
+Building & Installing
+=====================
+
 Let $TOP_DIR denote the directory containing this README file.
 Let $INSTALL_DIR denote the directory into which this
 software is to be installed.
@@ -28,7 +32,10 @@ To build and install the software, use the commands:
 To run a demonstration, use the commands:
     $INSTALL_DIR/bin/demo
 
-Options:
+
+Options
+=======
+
   -h [ --help ]         produce help message
   --width arg           Simulation width in pixels. Defaults to 512, overridden
                         by mask.
@@ -42,8 +49,8 @@ Options:
   --mode arg            Growth mode, 'open' or 'closed' venation styles. 
                         Defaults to 'open'.
   --timeout arg         A time limit in seconds after which the simulation 
-                        result will be saved to the output file and the program
-                        will terminate. Defaults to 60 seconds.
+                        result will be saved to the output file, if present, 
+                        and the program will terminate. Defaults to 60 seconds.
   --growth-radius arg   The maximum distance an attractor can be from a growth 
                         node and still influence it (relative to normalized 
                         points). Defaults to 0.5.
